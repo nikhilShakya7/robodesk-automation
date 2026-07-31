@@ -1,0 +1,108 @@
+- generic [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#wp--skip-link--target"
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e7]:
+        - paragraph [ref=e8]:
+          - link "Robodesk1" [ref=e9] [cursor=pointer]:
+            - /url: http://robodesk1.local
+        - navigation [ref=e11]:
+          - list [ref=e16]:
+            - list [ref=e17]:
+              - listitem [ref=e18]:
+                - link "My Tickets" [ref=e19] [cursor=pointer]:
+                  - /url: http://robodesk1.local/my-tickets/
+              - listitem [ref=e20]:
+                - link "Robodesk Support" [ref=e21] [cursor=pointer]:
+                  - /url: http://robodesk1.local/robodesk-support/
+              - listitem [ref=e22]:
+                - link "Sample Page" [ref=e23] [cursor=pointer]:
+                  - /url: http://robodesk1.local/sample-page/
+              - listitem [ref=e24]:
+                - link "Submit Ticket" [ref=e25] [cursor=pointer]:
+                  - /url: http://robodesk1.local/submit-ticket/
+    - main [ref=e26]:
+      - generic [ref=e27]:
+        - heading "Robodesk Support" [level=1] [ref=e28]
+        - paragraph [ref=e31]:
+          - text: Please
+          - link "login" [ref=e32] [cursor=pointer]:
+            - /url: http://robodesk1.local/wp-login.php?redirect_to=http%3A%2F%2Frobodesk1.local%2Frobodesk-support%2F
+          - text: to view your tickets.
+    - contentinfo [ref=e33]:
+      - generic [ref=e35]:
+        - generic [ref=e36]:
+          - heading [level=2] [ref=e39]:
+            - link "Robodesk1" [ref=e40] [cursor=pointer]:
+              - /url: http://robodesk1.local
+          - generic [ref=e41]:
+            - navigation "2" [ref=e42]:
+              - list [ref=e43]:
+                - listitem [ref=e44]:
+                  - link "Blog" [ref=e45] [cursor=pointer]:
+                    - /url: "#"
+                - listitem [ref=e46]:
+                  - link "About" [ref=e47] [cursor=pointer]:
+                    - /url: "#"
+                - listitem [ref=e48]:
+                  - link "FAQs" [ref=e49] [cursor=pointer]:
+                    - /url: "#"
+                - listitem [ref=e50]:
+                  - link "Authors" [ref=e51] [cursor=pointer]:
+                    - /url: "#"
+            - navigation "3" [ref=e52]:
+              - list [ref=e53]:
+                - listitem [ref=e54]:
+                  - link "Events" [ref=e55] [cursor=pointer]:
+                    - /url: "#"
+                - listitem [ref=e56]:
+                  - link "Shop" [ref=e57] [cursor=pointer]:
+                    - /url: "#"
+                - listitem [ref=e58]:
+                  - link "Patterns" [ref=e59] [cursor=pointer]:
+                    - /url: "#"
+                - listitem [ref=e60]:
+                  - link "Themes" [ref=e61] [cursor=pointer]:
+                    - /url: "#"
+        - generic [ref=e63]:
+          - paragraph [ref=e64]: Twenty Twenty-Five
+          - paragraph [ref=e65]:
+            - text: Designed with
+            - link "WordPress" [ref=e66] [cursor=pointer]:
+              - /url: https://wordpress.org
+  - generic [ref=e67]:
+    - generic [ref=e73]:
+      - generic [ref=e74]:
+        - banner [ref=e75]:
+          - img "Plugin Logo" [ref=e77]
+          - button [ref=e78]
+        - generic [ref=e82]:
+          - generic [ref=e83]:
+            - generic [ref=e85]:
+              - heading "Have Questions?" [level=4] [ref=e86]
+              - heading "Have any questions or need a quote? Leave us a message." [level=5] [ref=e87]
+            - generic [ref=e88]:
+              - textbox "Ask about this site..." [ref=e89]
+              - button [ref=e91] [cursor=pointer]
+          - generic [ref=e95]:
+            - generic [ref=e146] [cursor=pointer]:
+              - 'heading "यो सरकार असफल भए नेपाल राष्ट्र नै असफल हुने खतरा छ : पूर्वप्रधानमन्त्री दाहाल" [level=4] [ref=e147]'
+              - paragraph [ref=e149]: काठमाडौँ — पूर्वप्रधामन्त्री तथा नेकपाका संयोजक पुष्पकमल दाहालले राष्ट्रिय स्वतन्त्र पार्टी नेतृत्वको सरकार असफल भएमा नेपाल राष्ट्र नै असफल हुने खतरा रहेको भन्दै चिन्ता व्यक्त गरेका छन् । उनले वर्तमान सरकारलाई असफल हुने छुट नरहेको बताए । प्रतिनिधिसभाको बिहीबारको बैठकमा पूर्वप्रधानमन्त्री दाहालले सरकारको नेतृत्वले आफ्ना गतिविधि सच्याएर लैजानुपर्ने र सहकार्यमा अगाडि बढ्नुपर्ने बताए । सडकमा देखा परेका आक्रोश […]
+            - generic [ref=e154] [cursor=pointer]:
+              - heading "Matt Henry, Glenn Phillips out of third Test against England" [level=4] [ref=e155]
+              - paragraph [ref=e157]: New Zealand have suffered a double blow for the third Test against England at Trent Bridge in Nottingham, starting on June 25, as Matt Henry and Glenn Phillips have been ruled out due to injuries. While the pacer, who picked 11 wickets in the Oval Test victory, is out with a calf injury, the centurion […]
+            - generic [ref=e162] [cursor=pointer]:
+              - heading "West Indies, Scotland battle for Group B advantage" [level=4] [ref=e163]
+              - paragraph [ref=e165]: West Indies and Scotland arrive in Leeds with identical records but very different expectations. While West Indies opened their campaign by chasing down 163 against defending champions New Zealand, Scotland created history with their first-ever Women’s T20 World Cup win, beating Ireland by 40 runs. Another victory here would put either side in a strong […]
+      - contentinfo [ref=e120]:
+        - tablist [ref=e121]:
+          - tab [selected] [ref=e122] [cursor=pointer]
+          - tab [ref=e125] [cursor=pointer]
+          - tab [ref=e128] [cursor=pointer]
+          - tab [ref=e131] [cursor=pointer]
+        - heading [level=6] [ref=e135]:
+          - text: Powered by
+          - link "Robodesk" [ref=e136] [cursor=pointer]:
+            - /url: https://robodesk.io/
+    - button [active] [ref=e166] [cursor=pointer]
