@@ -31,7 +31,9 @@ export class DashboardPage extends BasePage {
   }
 
   async openDashboard() {
-    await this.page.goto("/wp-admin/admin.php?page=robodesk-dashboard");
+    await this.page.goto(
+      "/wp-admin/admin.php?page=robodesk-dashboard&tab=dashboard",
+    );
     await this.waitForLoading();
   }
 

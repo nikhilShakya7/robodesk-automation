@@ -31,8 +31,13 @@ test.describe("Robodesk admin suite", () => {
   }) => {
     const reply = createReplyData();
     await login(page, config.adminUsername, config.adminPassword);
-    await page.goto("/wp-admin/post.php?post=1&action=edit");
+    await page.goto(
+      "/wp-admin/admin.php?page=robodesk-dashboard&tab=dashboard",
+    );
+    await page.locator("tr[data-ticketid]").first().click();
+    await expect(page).toHaveURL(/ticket=\d+/);
     await replyToTicket(page, reply.content);
+    await expect(page.locator("body")).toContainText(reply.content);
     await changeStatus(page, "Open");
   });
 });

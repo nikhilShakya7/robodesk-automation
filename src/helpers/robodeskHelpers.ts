@@ -68,14 +68,10 @@ export async function createTicket(
 }
 
 export async function replyToTicket(page: Page, content: string) {
-  const textarea = page.locator("textarea").first();
-  if (await textarea.count()) {
-    await textarea.fill(content);
-    await page
-      .getByRole("button", { name: /reply/i })
-      .click()
-      .catch(() => undefined);
-  }
+  const editor = page.locator("#new-reply");
+  await editor.click();
+  await editor.pressSequentially(content);
+  await page.locator("#send-reply-btn").click();
 }
 
 export async function assignTicket(page: Page, assignee: string) {
@@ -87,9 +83,8 @@ export async function assignTicket(page: Page, assignee: string) {
 
 export async function changeStatus(page: Page, status: string) {
   await page
-    .getByLabel(/status/i)
-    .selectOption({ label: status })
-    .catch(() => undefined);
+    .locator("select#ticket-status-select")
+    .selectOption({ label: status });
 }
 
 export async function uploadFile(page: Page, filePath: string) {
