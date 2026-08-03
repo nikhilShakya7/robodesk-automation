@@ -48,6 +48,14 @@ export class ChatWidgetPage extends BasePage {
     return this.page.locator("button.rd-login-button");
   }
 
+  get emailError() {
+    return this.page.locator("#email-error");
+  }
+
+  get passwordError() {
+    return this.page.locator("#password-error");
+  }
+
   get conversationsView() {
     return this.page.locator("#keyword-search");
   }

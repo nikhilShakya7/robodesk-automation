@@ -16,9 +16,27 @@ export class TicketDetailsPage extends BasePage {
       .or(this.page.locator("textarea"));
   }
 
+  get replyEditor() {
+    return this.page.frameLocator("iframe#comment_ifr").locator("body");
+  }
+
+  get submitReplyButton() {
+    return this.page.locator("#submit");
+  }
+
   async openTicket(id: string) {
     await this.page.goto(`/wp-admin/post.php?post=${id}&action=edit`);
     await this.waitForLoading();
+  }
+
+  async reply(content: string) {
+    await this.replyEditor.click();
+    await this.replyEditor.pressSequentially(content);
+    await this.submitReplyButton.click();
+  }
+
+  async expectReplyVisible(content: string) {
+    await expect(this.page.locator("body")).toContainText(content);
   }
 
   async expectLoaded() {

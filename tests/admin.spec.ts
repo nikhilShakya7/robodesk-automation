@@ -2,9 +2,15 @@ import { test, expect } from "../src/fixtures/roles";
 import { LoginPage } from "../src/pages/loginPage";
 import { DashboardPage } from "../src/pages/dashboardPage";
 import { ProfilePage } from "../src/pages/profilePage";
-import { createReplyData } from "../src/data/fakeData";
+import { createReplyData, createTicketData } from "../src/data/fakeData";
 import { config } from "../src/config/env";
-import { login, replyToTicket, changeStatus } from "../src/helpers/robodeskHelpers";
+import {
+  login,
+  replyToTicket,
+  changeStatus,
+  createTicket,
+  waitForToast,
+} from "../src/helpers/robodeskHelpers";
 
 test.describe("Robodesk admin suite", () => {
   test("auth: admin can view dashboard @smoke @regression @admin", async ({
@@ -25,7 +31,14 @@ test.describe("Robodesk admin suite", () => {
     await profilePage.openProfile();
     await expect(page.locator("body")).toBeVisible();
   });
-
+  test("helpers: create ticket and show toast @regression @customer", async ({
+    page,
+  }) => {
+    const data = createTicketData();
+    await login(page, config.adminUsername, config.adminPassword);
+    await createTicket(page, data);
+    await waitForToast(page);
+  });
   test("helpers: reply to ticket and status change @regression @admin", async ({
     page,
   }) => {
