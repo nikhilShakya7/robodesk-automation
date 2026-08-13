@@ -47,37 +47,79 @@ async function loginCustomerViaWidgetOnce(browser: Browser): Promise<StorageStat
   );
   const state = await context.storageState();
   await context.close();
+  saveStorage(state);
   return state;
 }
 
+function saveStorage(state: StorageState) {
+  mkdirSync(dirname(STORAGE_FILE), { recursive: true });
+  writeFileSync(STORAGE_FILE, JSON.stringify(state));
+}
+
+async function validateCustomerStorage(
+  browser: Browser,
+  state: StorageState,
+): Promise<boolean> {
+  const context = await browser.newContext({ storageState: state });
+  const page = await context.newPage();
+  try {
+    await page.goto("/robodesk-support/?robodesk_page=my-tickets");
+    await page.waitForTimeout(2000);
+    const loggedIn = await page.evaluate(
+      () => !document.body.innerText.includes("Please login to view your tickets"),
+    );
+    return loggedIn;
+  } catch {
+    return false;
+  } finally {
+    await context.close();
+  }
+}
+
+// One login per worker per run: reuses the disk cache and re-validates it;
+// only performs a fresh widget login when the cached session is missing or expired.
 async function getCustomerStorage(browser: Browser): Promise<StorageState> {
   if (existsSync(STORAGE_FILE)) {
     try {
-      return JSON.parse(readFileSync(STORAGE_FILE, "utf8")) as StorageState;
+      const state = JSON.parse(
+        readFileSync(STORAGE_FILE, "utf8"),
+      ) as StorageState;
+      if (await validateCustomerStorage(browser, state)) {
+        return state;
+      }
     } catch {
       // fall through to a fresh login
     }
   }
-  const state = await loginCustomerViaWidgetOnce(browser);
-  mkdirSync(dirname(STORAGE_FILE), { recursive: true });
-  writeFileSync(STORAGE_FILE, JSON.stringify(state));
-  return state;
+  return loginCustomerViaWidgetOnce(browser);
 }
 
-export const portalTest = base.extend({
-  page: async ({ browser }, use, testInfo) => {
-    if (!storageStateByWorker[testInfo.workerIndex]) {
-      storageStateByWorker[testInfo.workerIndex] = await getCustomerStorage(
-        browser,
-      );
-    }
-    const context = await browser.newContext({
-      storageState: storageStateByWorker[testInfo.workerIndex],
-    });
+async function getWorkerStorage(
+  browser: Browser,
+  workerIndex: number,
+): Promise<StorageState> {
+  if (!storageStateByWorker[workerIndex]) {
+    storageStateByWorker[workerIndex] = await getCustomerStorage(browser);
+  }
+  return storageStateByWorker[workerIndex];
+}
+
+function authenticatedContextFixture() {
+  return async ({ browser }, use, testInfo) => {
+    const state = await getWorkerStorage(browser, testInfo.workerIndex);
+    const context = await browser.newContext({ storageState: state });
     const page = await context.newPage();
     await use(page);
     await context.close();
-  },
+  };
+}
+
+export const portalTest = base.extend({
+  page: authenticatedContextFixture(),
+});
+
+export const widgetTest = base.extend({
+  page: authenticatedContextFixture(),
 });
 
 export const expect = base.expect;
