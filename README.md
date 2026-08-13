@@ -51,7 +51,7 @@ Reports: HTML report in `playwright-report/` (`npx playwright show-report`), plu
 ## What is covered
 
 - **Auth** (`tests/auth.spec.ts`): guest prompt, widget login (existing user email + password), invalid/empty email, empty credentials (inline errors, no API call), wrong password rejection
-- **Chat widget** (`tests/chat.spec.ts`): widget presence, conversation creation, search, priority/status filters
+- **Chat widget** (`tests/chat.spec.ts`): widget presence, conversation creation, search/filters, FAQ tab (search + detail), notices tab, single-ticket chat view, image attachment, special-char search negatives
 - **Tickets** (`tests/tickets.spec.ts`): my tickets list + filters, ticket details, customer reply, access negatives (another user's ticket, non-existent id)
 - **Create ticket** (`tests/create-ticket.spec.ts`): TinyMCE form submit, empty-title block
 - **Credentials vault** (`tests/credentials-vault.spec.ts`): add/delete credentials
@@ -101,6 +101,30 @@ Reports: HTML report in `playwright-report/` (`npx playwright show-report`), plu
 - **TinyMCE**: the create-ticket description is a hidden `textarea#ticket_content`; tests type into `iframe#ticket_content_ifr`. The customer reply editor on ticket details is `iframe#comment_ifr`.
 - **Admin reply/status**: done from the Robodesk dashboard ticket view (`admin.php?page=robodesk-dashboard&tab=dashboard&ticket=N`), replying via the `#new-reply` editor and `#send-reply-btn`, changing status via `#ticket-status-select`.
 - **Vault delete**: deletion uses a native `confirm()` dialog, which the page object accepts.
+
+## Screenshots
+
+Captured from the live local site (logged-in sessions) using the same flows the tests exercise.
+
+### Admin
+
+| Admin ticket view (reply + status) | All tickets view (bulk actions) |
+| --- | --- |
+| ![Admin ticket view](docs/screenshots/admin-ticket-view.png) | ![All tickets](docs/screenshots/admin-all-tickets.png) |
+
+### Support portal (customer)
+
+| My tickets | Create ticket | Credentials vault |
+| --- | --- | --- |
+| ![My tickets](docs/screenshots/portal-my-tickets.png) | ![Create ticket](docs/screenshots/portal-create-ticket.png) | ![Credentials vault](docs/screenshots/portal-credentials-vault.png) |
+
+### Chat widget (customer, logged in)
+
+| Conversations tab | FAQ tab |
+| --- | --- |
+| ![Widget conversations](docs/screenshots/widget-conversations.png) | ![Widget FAQ](docs/screenshots/widget-faq.png) |
+
+Screenshots live in `docs/screenshots/`. Re-capture any time with a logged-in session (they reflect the current site data).
 
 ## Documentation
 

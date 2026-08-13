@@ -28,6 +28,14 @@ export class ChatWidgetPage extends BasePage {
     return this.page.locator(".tab-container button[role='tab']").nth(1);
   }
 
+  get noticesTab() {
+    return this.page.locator(".tab-container button[role='tab']").nth(2);
+  }
+
+  get faqTab() {
+    return this.page.locator(".tab-container button[role='tab']").nth(3);
+  }
+
   get loginCard() {
     return this.page.locator(".login-card");
   }
@@ -78,6 +86,61 @@ export class ChatWidgetPage extends BasePage {
 
   get noTicketsMessage() {
     return this.page.getByText(/no tickets found/i);
+  }
+
+  get faqItems() {
+    return this.page.locator(".robodesk-popup.open .rd-faq-item");
+  }
+
+  get faqSearchInput() {
+    return this.page.locator(
+      ".robodesk-popup.open input[placeholder='Search your answer here']",
+    );
+  }
+
+  get noticeItems() {
+    return this.page.locator(".robodesk-popup.open .rd-notice-item");
+  }
+
+  get backButton() {
+    return this.page.locator(".robodesk-popup.open .back-button");
+  }
+
+  get singleTicketMessageInput() {
+    return this.page.locator(
+      ".robodesk-popup.open textarea[placeholder='Write a message...']",
+    );
+  }
+
+  get singleTicketSendButton() {
+    return this.page.locator(".robodesk-popup.open .chat-input button").last();
+  }
+
+  get fileInput() {
+    return this.page.locator(".robodesk-popup.open input[type='file']").first();
+  }
+
+  get sentImages() {
+    return this.page.locator(".robodesk-popup.open .chat-message.sent img");
+  }
+
+  async openNoticesTab() {
+    await this.noticesTab.waitFor({ state: "visible", timeout: 10000 });
+    await this.noticesTab.click();
+  }
+
+  async openFaqTab() {
+    await this.faqTab.waitFor({ state: "visible", timeout: 10000 });
+    await this.faqTab.click();
+  }
+
+  async openFirstTicket() {
+    await this.ticketRows.first().waitFor({ state: "visible", timeout: 15000 });
+    await this.ticketRows.first().click();
+    await this.singleTicketMessageInput.waitFor({
+      state: "visible",
+      timeout: 10000,
+    });
   }
 
   async searchTickets(term: string) {

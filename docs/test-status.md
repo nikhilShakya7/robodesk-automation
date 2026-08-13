@@ -48,7 +48,7 @@ See [docs/tests.md](tests.md) for the full test documentation.
 | auth: widget shows inline errors and skips API call for empty credentials | Verified | Inline errors, no auth POST for empty submits |
 | auth: widget rejects wrong password with no session | Verified | "Oops! That's not the right password." + no session |
 
-### Chat widget suite (`chat.spec.ts`) — 5 tests
+### Chat widget suite (`chat.spec.ts`) — 11 tests
 
 | Test | Status | Notes |
 | --- | --- | --- |
@@ -57,6 +57,12 @@ See [docs/tests.md](tests.md) for the full test documentation.
 | chat: customer starts a chat conversation after login | Verified | Sent message bubble asserted |
 | chat: search filters conversations in the widget | Verified | Search narrows, no-match message, restore |
 | chat: priority and status filters work in the widget | Verified | |
+| chat: FAQ tab lists questions and search filters them | Verified | `.rd-faq-item` count narrows to matching subset, no-match → 0, clear restores |
+| chat: FAQ detail opens from the FAQ list | Verified | Click item → detail with back button; back restores list |
+| chat: notices render in the widget | Verified | `.rd-notice-item` items render with Notices header |
+| chat: ticket row opens single-ticket chat view and back returns to list | Verified | Message input + back button; back restores list |
+| chat: customer sends an image attachment in a ticket | Verified | Uploads `test-data/tiny.jpeg` via hidden `input[type=file]`, preview `.has-preview`, sent message gains image |
+| chat: search handles special characters without crashing | Verified | `.*`, `[abc`, `a+b*c?`, whitespace → no-match message; clear restores |
 
 ### Tickets suite (`tickets.spec.ts`) — 6 tests
 

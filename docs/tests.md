@@ -45,12 +45,12 @@ npx playwright test tickets.spec.ts --grep "reply to ticket"
 | --- | --- | --- |
 | `tests/admin.spec.ts` | Admin: login, profile, ticket ops, bulk, taxonomies, FAQs, notices | 12 |
 | `tests/auth.spec.ts` | Widget login / auth | 6 |
-| `tests/chat.spec.ts` | Chat widget, search, filters | 5 |
+| `tests/chat.spec.ts` | Chat widget, FAQ, notices, single-ticket chat, attachments | 11 |
 | `tests/tickets.spec.ts` | My tickets, details, reply, access | 6 |
 | `tests/create-ticket.spec.ts` | Create ticket (submit + validation) | 3 (1 skipped) |
 | `tests/credentials-vault.spec.ts` | Credentials vault CRUD | 1 |
 | `tests/profile.spec.ts` | Customer profile update | 1 |
-| **Total** | | **34** |
+| **Total** | | **40** |
 
 ## Admin Tests (`tests/admin.spec.ts`)
 
@@ -89,6 +89,12 @@ npx playwright test tickets.spec.ts --grep "reply to ticket"
 | chat: customer starts a chat conversation after login | @smoke @regression @customer | Sends a message from the widget chat tab and asserts the sent bubble appears |
 | chat: search filters conversations in the widget | @smoke @regression @customer | Search narrows the ticket list; a no-match term shows "No tickets found"; clearing restores the list |
 | chat: priority and status filters work in the widget | @regression @customer | Priority and status selects filter the conversation list correctly |
+| chat: FAQ tab lists questions and search filters them | @regression @customer | FAQ tab (4th tab) shows `.rd-faq-item` questions; searching "Search your answer here" narrows to matching titles; no-match → 0 items; clearing restores |
+| chat: FAQ detail opens from the FAQ list | @regression @customer | Clicking a `.rd-faq-item` opens the FAQ detail (back button visible, title shown); back returns to the list |
+| chat: notices render in the widget | @regression @customer | Notices tab shows `.rd-notice-item` announcements under the Notices header |
+| chat: ticket row opens single-ticket chat view and back returns to list | @regression @customer | Clicking a `.single-rd-ticket` opens the chat view (`textarea[placeholder="Write a message..."]` + back button); back restores the conversation list |
+| chat: customer sends an image attachment in a ticket | @smoke @regression @customer | Sets `test-data/tiny.jpeg` on the hidden `input[type="file"]` (accept image/*), preview container gains `.has-preview`, send adds an image to the sent messages |
+| chat: search handles special characters without crashing | @regression @customer | Terms `.*`, `[abc`, `a+b*c?`, and whitespace show the no-match message without crashing; clearing restores the full list |
 
 ## Tickets Tests (`tests/tickets.spec.ts`)
 

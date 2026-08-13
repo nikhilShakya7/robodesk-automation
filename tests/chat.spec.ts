@@ -1,5 +1,6 @@
 import { test, expect, widgetTest } from "../src/fixtures/roles";
 import { ChatWidgetPage } from "../src/pages/chatWidgetPage";
+import { join } from "path";
 
 test.describe("Robodesk chat widget", () => {
   test("chat: home page renders chat widget container @regression @chat", async ({
@@ -91,6 +92,147 @@ test.describe("Robodesk chat widget", () => {
         .toBeGreaterThan(0);
       const filtered = await chatWidget.ticketRows.count();
       expect(filtered).toBeLessThanOrEqual(total);
+    },
+  );
+
+  widgetTest(
+    "chat: FAQ tab lists questions and search filters them @regression @customer",
+    async ({ page }) => {
+      const chatWidget = new ChatWidgetPage(page);
+      await chatWidget.openHome();
+      await chatWidget.openWidget();
+      await chatWidget.openFaqTab();
+      await expect(chatWidget.faqItems.first()).toBeVisible({
+        timeout: 10000,
+      });
+      const total = await chatWidget.faqItems.count();
+      expect(total).toBeGreaterThan(0);
+      await chatWidget.faqSearchInput.fill("conversations");
+      await expect
+        .poll(async () => chatWidget.faqItems.count(), { timeout: 10000 })
+        .toBeGreaterThan(0);
+      const matched = await chatWidget.faqItems.count();
+      expect(matched).toBeLessThan(total);
+      await expect(chatWidget.faqItems.first()).toContainText(/conversation/i);
+      await chatWidget.faqSearchInput.fill("zzz-no-match-zzz");
+      await expect
+        .poll(async () => chatWidget.faqItems.count(), { timeout: 10000 })
+        .toBe(0);
+      await chatWidget.faqSearchInput.fill("");
+      await expect
+        .poll(async () => chatWidget.faqItems.count(), { timeout: 10000 })
+        .toBe(total);
+    },
+  );
+
+  widgetTest(
+    "chat: FAQ detail opens from the FAQ list @regression @customer",
+    async ({ page }) => {
+      const chatWidget = new ChatWidgetPage(page);
+      await chatWidget.openHome();
+      await chatWidget.openWidget();
+      await chatWidget.openFaqTab();
+      await expect(chatWidget.faqItems.first()).toBeVisible({
+        timeout: 10000,
+      });
+      const title = await chatWidget.faqItems
+        .first()
+        .locator(".rd-faq-title")
+        .innerText();
+      await chatWidget.faqItems.first().click();
+      await expect(chatWidget.backButton).toBeVisible({ timeout: 10000 });
+      await expect(page.locator(".robodesk-popup.open")).toContainText(title);
+      await chatWidget.backButton.click();
+      await expect(chatWidget.faqItems.first()).toBeVisible({ timeout: 10000 });
+    },
+  );
+
+  widgetTest(
+    "chat: notices render in the widget @regression @customer",
+    async ({ page }) => {
+      const chatWidget = new ChatWidgetPage(page);
+      await chatWidget.openHome();
+      await chatWidget.openWidget();
+      await chatWidget.openNoticesTab();
+      await expect(chatWidget.noticeItems.first()).toBeVisible({
+        timeout: 10000,
+      });
+      const count = await chatWidget.noticeItems.count();
+      expect(count).toBeGreaterThan(0);
+      await expect(
+        page.locator(".robodesk-popup.open .rd-notice-tab-wrap"),
+      ).toContainText(/notices|stay updated/i);
+    },
+  );
+
+  widgetTest(
+    "chat: ticket row opens single-ticket chat view and back returns to list @regression @customer",
+    async ({ page }) => {
+      const chatWidget = new ChatWidgetPage(page);
+      await chatWidget.openHome();
+      await chatWidget.openWidget();
+      await chatWidget.openConversationsTab();
+      await expect(chatWidget.ticketRows.first()).toBeVisible({
+        timeout: 15000,
+      });
+      await chatWidget.ticketRows.first().click();
+      await expect(chatWidget.singleTicketMessageInput).toBeVisible({
+        timeout: 10000,
+      });
+      await expect(chatWidget.backButton).toBeVisible();
+      await chatWidget.backButton.click();
+      await expect(chatWidget.ticketRows.first()).toBeVisible({
+        timeout: 10000,
+      });
+    },
+  );
+
+  widgetTest(
+    "chat: customer sends an image attachment in a ticket @smoke @regression @customer",
+    async ({ page }) => {
+      const chatWidget = new ChatWidgetPage(page);
+      await chatWidget.openHome();
+      await chatWidget.openWidget();
+      await chatWidget.openConversationsTab();
+      await chatWidget.openFirstTicket();
+      const before = await chatWidget.sentImages.count();
+      await chatWidget.fileInput.setInputFiles(
+        join(process.cwd(), "test-data", "tiny.jpeg"),
+      );
+      await expect(
+        page.locator(".robodesk-popup.open .chat-input.has-preview"),
+      ).toBeVisible({ timeout: 10000 });
+      await chatWidget.singleTicketSendButton.click();
+      await expect
+        .poll(async () => chatWidget.sentImages.count(), { timeout: 15000 })
+        .toBeGreaterThan(before);
+    },
+  );
+
+  widgetTest(
+    "chat: search handles special characters without crashing @regression @customer",
+    async ({ page }) => {
+      const chatWidget = new ChatWidgetPage(page);
+      await chatWidget.openHome();
+      await chatWidget.openWidget();
+      await chatWidget.openConversationsTab();
+      await expect(chatWidget.ticketRows.first()).toBeVisible({
+        timeout: 15000,
+      });
+      const total = await chatWidget.ticketRows.count();
+      for (const term of [".*", "[abc", "a+b*c?", "   "]) {
+        await chatWidget.searchTickets(term);
+        await expect
+          .poll(async () => chatWidget.ticketRows.count(), { timeout: 10000 })
+          .toBeLessThanOrEqual(total);
+        await expect(chatWidget.noTicketsMessage).toBeVisible({
+          timeout: 10000,
+        });
+      }
+      await chatWidget.searchTickets("");
+      await expect
+        .poll(async () => chatWidget.ticketRows.count(), { timeout: 10000 })
+        .toBe(total);
     },
   );
 });
