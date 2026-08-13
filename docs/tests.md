@@ -43,14 +43,14 @@ npx playwright test tickets.spec.ts --grep "reply to ticket"
 
 | File | Feature | Tests |
 | --- | --- | --- |
-| `tests/admin.spec.ts` | Admin: login, profile, ticket ops | 4 |
+| `tests/admin.spec.ts` | Admin: login, profile, ticket ops, bulk, taxonomies, FAQs, notices | 12 |
 | `tests/auth.spec.ts` | Widget login / auth | 6 |
 | `tests/chat.spec.ts` | Chat widget, search, filters | 5 |
 | `tests/tickets.spec.ts` | My tickets, details, reply, access | 6 |
 | `tests/create-ticket.spec.ts` | Create ticket (submit + validation) | 3 (1 skipped) |
 | `tests/credentials-vault.spec.ts` | Credentials vault CRUD | 1 |
 | `tests/profile.spec.ts` | Customer profile update | 1 |
-| **Total** | | **26** |
+| **Total** | | **34** |
 
 ## Admin Tests (`tests/admin.spec.ts`)
 
@@ -60,6 +60,14 @@ npx playwright test tickets.spec.ts --grep "reply to ticket"
 | profile: profile page loads | @regression @admin | Profile page opens for the admin session |
 | helpers: create ticket and show toast | @regression @customer | Ticket creation flow on `/submit-ticket/` and the success toast appears |
 | helpers: reply to ticket and status change | @regression @admin | Opens a ticket from the Robodesk dashboard (`admin.php?page=robodesk-dashboard&tab=dashboard&ticket=N`), posts a reply via `#new-reply` + `#send-reply-btn`, changes status via `#ticket-status-select` |
+| dashboard: bulk set status to Open from all tickets view | @regression @admin | On `tab=tickets&status=all`: checks a row `.ticket-checkbox`, applies `#bulk-action-select` "Set Status: Open" via `#apply-bulk-action`, body shows the updated notice |
+| ticket: priority change persists on dashboard ticket view | @regression @admin | Changes `#ticket-priority-select` to a different value, reloads the ticket view, asserts it persisted, then restores the original |
+| ticket: assignee change persists on dashboard ticket view | @regression @admin | Changes `#ticket-assignee-select` to a different agent (value = user ID), reloads, asserts persistence, restores |
+| departments: add and delete a category | @regression @admin | `edit-tags.php?taxonomy=robodesk_ticket_category`: adds via `#tag-name` + `#submit`, expects "Item added." notice, deletes via `a.delete-tag` (accepts the JS confirm dialog), row removed |
+| priorities: add and delete a category | @regression @admin | Same flow on `taxonomy=robodesk_ticket_priority` |
+| faq: create, publish and trash a FAQ | @regression @admin | Classic editor `post-new.php?post_type=robodesk_faq`: fills `#title`, clicks `#publish`, expects "Post published.", then moves the row to Trash via `a.submitdelete` |
+| notice: create, publish and trash a notice | @regression @admin | Same flow on `post_type=notice` |
+| debug log: page loads | @regression @admin | `admin.php?page=robodesk-debug-log` renders for the admin session |
 
 ## Auth Tests (`tests/auth.spec.ts`)
 

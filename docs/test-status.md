@@ -20,7 +20,7 @@ See [docs/tests.md](tests.md) for the full test documentation.
 
 ## Verification Status
 
-### Admin suite (`admin.spec.ts`) — 4 tests
+### Admin suite (`admin.spec.ts`) — 12 tests
 
 | Test | Status | Notes |
 | --- | --- | --- |
@@ -28,6 +28,14 @@ See [docs/tests.md](tests.md) for the full test documentation.
 | profile: profile page loads | Verified | |
 | helpers: create ticket and show toast | Verified | Ticket creation + toast |
 | helpers: reply to ticket and status change | Verified | Dashboard ticket view reply + status change |
+| dashboard: bulk set status to Open from all tickets view | Verified | All-tickets view, checkbox + bulk-action Apply |
+| ticket: priority change persists on dashboard ticket view | Verified | Change → reload → persists; original restored |
+| ticket: assignee change persists on dashboard ticket view | Verified | Change → reload → persists; original restored |
+| departments: add and delete a category | Verified | Taxonomy add + JS confirm dialog accept + delete |
+| priorities: add and delete a category | Verified | Taxonomy add + JS confirm dialog accept + delete |
+| faq: create, publish and trash a FAQ | Verified | Classic editor publish + trash |
+| notice: create, publish and trash a notice | Verified | Classic editor publish + trash |
+| debug log: page loads | Verified | |
 
 ### Auth suite (`auth.spec.ts`) — 6 tests
 
@@ -88,6 +96,6 @@ See [docs/tests.md](tests.md) for the full test documentation.
 
 ## Planned Next Steps
 
-- Expand coverage for departments, priorities, FAQs, notices, settings, and permissions
 - Revisit the /submit-ticket/ form scenario when the live UI exposes the expected elements
 - Add more negative coverage (XSS sanitization, long titles, rate-limit lockout assertion)
+- Expand coverage for settings and support-staff permissions (settings page currently returns 403 for the test admin role)

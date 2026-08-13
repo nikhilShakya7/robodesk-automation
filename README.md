@@ -56,13 +56,13 @@ Reports: HTML report in `playwright-report/` (`npx playwright show-report`), plu
 - **Create ticket** (`tests/create-ticket.spec.ts`): TinyMCE form submit, empty-title block
 - **Credentials vault** (`tests/credentials-vault.spec.ts`): add/delete credentials
 - **Profile** (`tests/profile.spec.ts`): update first name (with restore)
-- **Admin** (`tests/admin.spec.ts`): login + dashboard, profile page, ticket creation + toast, dashboard reply + status change
+- **Admin** (`tests/admin.spec.ts`): login + dashboard, profile page, ticket creation + toast, dashboard reply + status change, bulk status change, priority/assignee persistence, departments/priorities add+delete, FAQ/notice create+trash, debug log
 
 ## Architecture
 
 ```
 ├── tests/                  # Feature-wise Playwright specs
-│   ├── admin.spec.ts              # admin: login, profile, ticket ops
+│   ├── admin.spec.ts              # admin: login, ticket ops, bulk, taxonomies, FAQs, notices
 │   ├── auth.spec.ts               # widget login / auth
 │   ├── chat.spec.ts               # chat widget + search/filters
 │   ├── create-ticket.spec.ts      # create ticket (submit + validation)
