@@ -1,9 +1,7 @@
 import { test, adminTest, expect } from "../src/fixtures/roles";
-import { LoginPage } from "../src/pages/loginPage";
 import { DashboardPage } from "../src/pages/dashboardPage";
 import { ProfilePage } from "../src/pages/profilePage";
 import { createReplyData, createTicketData } from "../src/data/fakeData";
-import { config } from "../src/config/env";
 import {
   replyToTicket,
   changeStatus,
@@ -13,18 +11,14 @@ import {
 
 test.describe("Robodesk admin suite", () => {
   test.setTimeout(180_000);
-  test("auth: admin can view dashboard @smoke @regression @admin", async ({
-    page,
-  }) => {
-    const loginPage = new LoginPage(page);
-    await loginPage.goto();
-    await loginPage.login({
-      username: config.adminUsername,
-      password: config.adminPassword,
-    });
-    const dashboardPage = new DashboardPage(page);
-    await dashboardPage.expectCoreMenuVisible();
-  });
+  adminTest(
+    "auth: admin can view dashboard @smoke @regression @admin",
+    async ({ page }) => {
+      const dashboardPage = new DashboardPage(page);
+      await dashboardPage.openDashboard();
+      await dashboardPage.expectCoreMenuVisible();
+    },
+  );
 
   adminTest("profile: profile page loads @regression @admin", async ({ page }) => {
     const profilePage = new ProfilePage(page);
