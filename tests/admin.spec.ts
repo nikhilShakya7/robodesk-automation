@@ -1,11 +1,10 @@
-import { test, expect } from "../src/fixtures/roles";
+import { test, adminTest, expect } from "../src/fixtures/roles";
 import { LoginPage } from "../src/pages/loginPage";
 import { DashboardPage } from "../src/pages/dashboardPage";
 import { ProfilePage } from "../src/pages/profilePage";
 import { createReplyData, createTicketData } from "../src/data/fakeData";
 import { config } from "../src/config/env";
 import {
-  login,
   replyToTicket,
   changeStatus,
   createTicket,
@@ -13,6 +12,7 @@ import {
 } from "../src/helpers/robodeskHelpers";
 
 test.describe("Robodesk admin suite", () => {
+  test.setTimeout(180_000);
   test("auth: admin can view dashboard @smoke @regression @admin", async ({
     page,
   }) => {
@@ -26,24 +26,22 @@ test.describe("Robodesk admin suite", () => {
     await dashboardPage.expectCoreMenuVisible();
   });
 
-  test("profile: profile page loads @regression @admin", async ({ page }) => {
+  adminTest("profile: profile page loads @regression @admin", async ({ page }) => {
     const profilePage = new ProfilePage(page);
     await profilePage.openProfile();
     await expect(page.locator("body")).toBeVisible();
   });
-  test("helpers: create ticket and show toast @regression @customer", async ({
+  adminTest("helpers: create ticket and show toast @regression @customer", async ({
     page,
   }) => {
     const data = createTicketData();
-    await login(page, config.adminUsername, config.adminPassword);
     await createTicket(page, data);
     await waitForToast(page);
   });
-  test("helpers: reply to ticket and status change @regression @admin", async ({
+  adminTest("helpers: reply to ticket and status change @regression @admin", async ({
     page,
   }) => {
     const reply = createReplyData();
-    await login(page, config.adminUsername, config.adminPassword);
     await page.goto(
       "/wp-admin/admin.php?page=robodesk-dashboard&tab=dashboard",
     );
@@ -53,10 +51,9 @@ test.describe("Robodesk admin suite", () => {
     await expect(page.locator("body")).toContainText(reply.content);
     await changeStatus(page, "Open");
   });
-  test("dashboard: bulk set status to Open from all tickets view @regression @admin", async ({
+  adminTest("dashboard: bulk set status to Open from all tickets view @regression @admin", async ({
     page,
   }) => {
-    await login(page, config.adminUsername, config.adminPassword);
     await page.goto(
       "/wp-admin/admin.php?page=robodesk-dashboard&tab=tickets&status=all",
     );
@@ -71,10 +68,9 @@ test.describe("Robodesk admin suite", () => {
       timeout: 15000,
     });
   });
-  test("ticket: priority change persists on dashboard ticket view @regression @admin", async ({
+  adminTest("ticket: priority change persists on dashboard ticket view @regression @admin", async ({
     page,
   }) => {
-    await login(page, config.adminUsername, config.adminPassword);
     await page.goto(
       "/wp-admin/admin.php?page=robodesk-dashboard&tab=dashboard",
     );
@@ -100,10 +96,9 @@ test.describe("Robodesk admin suite", () => {
         .catch(() => undefined);
     }
   });
-  test("ticket: assignee change persists on dashboard ticket view @regression @admin", async ({
+  adminTest("ticket: assignee change persists on dashboard ticket view @regression @admin", async ({
     page,
   }) => {
-    await login(page, config.adminUsername, config.adminPassword);
     await page.goto(
       "/wp-admin/admin.php?page=robodesk-dashboard&tab=dashboard",
     );
@@ -129,10 +124,9 @@ test.describe("Robodesk admin suite", () => {
         .catch(() => undefined);
     }
   });
-  test("departments: add and delete a category @regression @admin", async ({
+  adminTest("departments: add and delete a category @regression @admin", async ({
     page,
   }) => {
-    await login(page, config.adminUsername, config.adminPassword);
     const name = `QA Dept ${Date.now()}`;
     await page.goto(
       "/wp-admin/edit-tags.php?taxonomy=robodesk_ticket_category&post_type=robodesk_ticket",
@@ -151,10 +145,9 @@ test.describe("Robodesk admin suite", () => {
       page.locator("#the-list tr").filter({ hasText: name }),
     ).toHaveCount(0);
   });
-  test("priorities: add and delete a category @regression @admin", async ({
+  adminTest("priorities: add and delete a category @regression @admin", async ({
     page,
   }) => {
-    await login(page, config.adminUsername, config.adminPassword);
     const name = `QA Priority ${Date.now()}`;
     await page.goto(
       "/wp-admin/edit-tags.php?taxonomy=robodesk_ticket_priority&post_type=robodesk_ticket",
@@ -173,10 +166,9 @@ test.describe("Robodesk admin suite", () => {
       page.locator("#the-list tr").filter({ hasText: name }),
     ).toHaveCount(0);
   });
-  test("faq: create, publish and trash a FAQ @regression @admin", async ({
+  adminTest("faq: create, publish and trash a FAQ @regression @admin", async ({
     page,
   }) => {
-    await login(page, config.adminUsername, config.adminPassword);
     const title = `QA FAQ ${Date.now()}`;
     await page.goto("/wp-admin/post-new.php?post_type=robodesk_faq");
     await page.locator("#title").fill(title);
@@ -193,10 +185,9 @@ test.describe("Robodesk admin suite", () => {
       page.locator("#the-list tr").filter({ hasText: title }),
     ).toHaveCount(0);
   });
-  test("notice: create, publish and trash a notice @regression @admin", async ({
+  adminTest("notice: create, publish and trash a notice @regression @admin", async ({
     page,
   }) => {
-    await login(page, config.adminUsername, config.adminPassword);
     const title = `QA Notice ${Date.now()}`;
     await page.goto("/wp-admin/post-new.php?post_type=notice");
     await page.locator("#title").fill(title);
@@ -213,8 +204,7 @@ test.describe("Robodesk admin suite", () => {
       page.locator("#the-list tr").filter({ hasText: title }),
     ).toHaveCount(0);
   });
-  test("debug log: page loads @regression @admin", async ({ page }) => {
-    await login(page, config.adminUsername, config.adminPassword);
+  adminTest("debug log: page loads @regression @admin", async ({ page }) => {
     await page.goto("/wp-admin/admin.php?page=robodesk-debug-log");
     await expect(page.locator("body")).toBeVisible();
   });

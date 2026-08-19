@@ -163,7 +163,7 @@ src/
 ├── helpers/
 │   └── robodeskHelpers.ts    # login, createTicket, reply, changeStatus, toast
 ├── fixtures/
-│   └── roles.ts              # test + portalTest (storageState reuse)
+│   └── roles.ts              # test + portalTest/widgetTest/adminTest (storageState reuse)
 └── data/
     └── fakeData.ts           # random ticket/reply/user data
 ```
@@ -171,6 +171,8 @@ src/
 ## Notes & Known Constraints
 
 - **Server-side rate limiting**: the widget email-check endpoint allows **10 checks per IP per hour** and blocks further checks with "Too many attempts. Please try again later." All local requests share one IP, so the whole suite shares the budget. The portal tests mitigate this by logging in once per worker and caching the session to `.state/customer-widget-storage.json`. If a cached session expires, delete that file and wait for the hourly limit to reset. The password login (`/wp-json/robodesk/v1/login`) is not rate limited.
+- **Admin one-time login**: admin feature tests use the `adminTest` fixture, which logs in once per worker via `/wp-login.php` and caches the session to `.state/admin-wp-storage.json` (validated on reuse, refreshed when expired). The only test that performs a full login flow is `auth: admin can view dashboard`.
+- **Admin suite timeout**: the admin spec sets `test.setTimeout(180000)` because the local server can be slow under load; dashboard pages can take over a minute to fully render.
 - **TinyMCE editor**: the create-ticket description field is a hidden `textarea#ticket_content`; tests type into `iframe#ticket_content_ifr`. The customer reply editor on ticket details is `iframe#comment_ifr`.
 - **Admin reply/status**: performed from the Robodesk dashboard ticket view (not the wp-admin post editor), using `#new-reply`, `#send-reply-btn`, and `#ticket-status-select`.
 - **Vault delete**: deletion triggers a native `confirm()` dialog which the page object accepts.

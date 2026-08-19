@@ -1,14 +1,25 @@
 import {
   test as base,
   type Browser,
-  type StorageState,
+  type BrowserContext,
+  type Page,
+  type TestInfo,
 } from "@playwright/test";
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "fs";
 import { join, dirname } from "path";
 import { login, loginCustomerViaWidgetWithPassword } from "../helpers/robodeskHelpers";
 import { config } from "../config/env";
 
-export const test = base.extend({
+type StorageState = Awaited<ReturnType<BrowserContext["storageState"]>>;
+type AdminUser = { username: string; password: string };
+
+export const test = base.extend<{
+  adminUser: AdminUser;
+  supportManagerUser: AdminUser;
+  supportStaffUser: AdminUser;
+  customerUser: { username: string; password: string };
+  guestUser: { username: string; password: string };
+}>({
   adminUser: async ({ page }, use) => {
     await login(page, config.adminUsername, config.adminPassword);
     await use({ username: config.adminUsername, password: config.adminPassword });
@@ -34,7 +45,9 @@ export const test = base.extend({
 const CUSTOMER_EMAIL = config.customerEmail;
 const CUSTOMER_PASSWORD = config.customerPassword;
 const storageStateByWorker: Record<number, StorageState> = {};
+const adminStorageStateByWorker: Record<number, StorageState> = {};
 const STORAGE_FILE = join(process.cwd(), ".state", "customer-widget-storage.json");
+const ADMIN_STORAGE_FILE = join(process.cwd(), ".state", "admin-wp-storage.json");
 
 async function loginCustomerViaWidgetOnce(browser: Browser): Promise<StorageState> {
   const context = await browser.newContext();
@@ -104,9 +117,92 @@ async function getWorkerStorage(
   return storageStateByWorker[workerIndex];
 }
 
+async function loginAdminOnce(browser: Browser): Promise<StorageState> {
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  await page.goto("/wp-login.php");
+  await page.locator('input[name="log"]').fill(config.adminUsername);
+  await page.locator('input[name="pwd"]').fill(config.adminPassword);
+  await page.locator("#wp-submit").click();
+  await page
+    .waitForURL(/wp-admin/, { timeout: 45000 })
+    .catch(() => undefined);
+  const state = await context.storageState();
+  await context.close();
+  mkdirSync(dirname(ADMIN_STORAGE_FILE), { recursive: true });
+  writeFileSync(ADMIN_STORAGE_FILE, JSON.stringify(state));
+  return state;
+}
+
+async function validateAdminStorage(
+  browser: Browser,
+  state: StorageState,
+): Promise<boolean> {
+  const context = await browser.newContext({ storageState: state });
+  const page = await context.newPage();
+  try {
+    await page.goto(
+      "/wp-admin/admin.php?page=robodesk-dashboard&tab=dashboard",
+    );
+    await page.waitForTimeout(2000);
+    const loggedIn = await page.evaluate(
+      () => !location.href.includes("wp-login"),
+    );
+    return loggedIn;
+  } catch {
+    return false;
+  } finally {
+    await context.close();
+  }
+}
+
+async function getAdminStorage(browser: Browser): Promise<StorageState> {
+  if (existsSync(ADMIN_STORAGE_FILE)) {
+    try {
+      const state = JSON.parse(
+        readFileSync(ADMIN_STORAGE_FILE, "utf8"),
+      ) as StorageState;
+      if (await validateAdminStorage(browser, state)) {
+        return state;
+      }
+    } catch {
+      // fall through to a fresh login
+    }
+  }
+  return loginAdminOnce(browser);
+}
+
+async function getWorkerAdminStorage(
+  browser: Browser,
+  workerIndex: number,
+): Promise<StorageState> {
+  if (!adminStorageStateByWorker[workerIndex]) {
+    adminStorageStateByWorker[workerIndex] = await getAdminStorage(browser);
+  }
+  return adminStorageStateByWorker[workerIndex];
+}
+
 function authenticatedContextFixture() {
-  return async ({ browser }, use, testInfo) => {
+  return async (
+    { browser }: { browser: Browser },
+    use: (page: Page) => Promise<void>,
+    testInfo: TestInfo,
+  ) => {
     const state = await getWorkerStorage(browser, testInfo.workerIndex);
+    const context = await browser.newContext({ storageState: state });
+    const page = await context.newPage();
+    await use(page);
+    await context.close();
+  };
+}
+
+function authenticatedAdminContextFixture() {
+  return async (
+    { browser }: { browser: Browser },
+    use: (page: Page) => Promise<void>,
+    testInfo: TestInfo,
+  ) => {
+    const state = await getWorkerAdminStorage(browser, testInfo.workerIndex);
     const context = await browser.newContext({ storageState: state });
     const page = await context.newPage();
     await use(page);
@@ -120,6 +216,10 @@ export const portalTest = base.extend({
 
 export const widgetTest = base.extend({
   page: authenticatedContextFixture(),
+});
+
+export const adminTest = base.extend({
+  page: authenticatedAdminContextFixture(),
 });
 
 export const expect = base.expect;

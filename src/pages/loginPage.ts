@@ -13,10 +13,7 @@ export class LoginPage extends BasePage {
   }
 
   get passwordInput() {
-    return this.page
-      .locator('input[type="password"]')
-      .filter({ hasAttribute: "name", name: "pwd" })
-      .first();
+    return this.page.locator('input[type="password"][name="pwd"]');
   }
 
   get loginButton() {

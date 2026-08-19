@@ -99,6 +99,7 @@ See [docs/tests.md](tests.md) for the full test documentation.
 
 - **Server-side rate limiting**: the widget email-check endpoint allows **10 checks per IP per hour** ("Too many attempts. Please try again later."). All local requests share one IP, so the whole suite shares the budget. Portal tests log in once per worker and cache the session to `.state/customer-widget-storage.json`; delete that file to force a fresh login. The password login REST endpoint is not rate limited.
 - Portal tests rely on a valid cached session (`.state/customer-widget-storage.json`); if it expires server-side, delete it and re-run.
+- Admin tests log in once per worker and cache the session to `.state/admin-wp-storage.json` (delete to force a fresh login); the suite uses a 180s per-test timeout because dashboard pages can load slowly under load.
 
 ## Planned Next Steps
 
