@@ -113,4 +113,20 @@ test.describe("Robodesk auth", () => {
     );
     await chatWidget.expectLoginBlocked();
   });
+
+  test("auth: widget blocks new-user registration when disabled @regression @customer", async ({
+    page,
+  }) => {
+    const chatWidget = new ChatWidgetPage(page);
+    await chatWidget.openHome();
+    await chatWidget.openWidget();
+    await chatWidget.openConversationsTab();
+    await chatWidget.expectLoginFormVisible();
+    await chatWidget.emailInput.fill(`qa+${Date.now()}@mailinator.com`);
+    await chatWidget.continueButton.click();
+    await expect(chatWidget.registrationMessage).toBeVisible({
+      timeout: 10000,
+    });
+    await chatWidget.expectLoginBlocked();
+  });
 });

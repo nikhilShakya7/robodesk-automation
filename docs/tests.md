@@ -27,6 +27,7 @@ npx playwright test tickets.spec.ts
 npx playwright test create-ticket.spec.ts
 npx playwright test credentials-vault.spec.ts
 npx playwright test profile.spec.ts
+npx playwright test conversation.spec.ts
 
 # By tag
 npx playwright test --grep "@smoke"
@@ -43,20 +44,21 @@ npx playwright test tickets.spec.ts --grep "reply to ticket"
 
 | File | Feature | Tests |
 | --- | --- | --- |
-| `tests/admin.spec.ts` | Admin: login, profile, ticket ops, bulk, taxonomies, FAQs, notices | 12 |
-| `tests/auth.spec.ts` | Widget login / auth | 6 |
+| `tests/admin.spec.ts` | Admin: dashboard, profile, ticket ops, bulk, taxonomies, FAQs, notices | 12 |
+| `tests/auth.spec.ts` | Widget login / auth | 7 |
 | `tests/chat.spec.ts` | Chat widget, FAQ, notices, single-ticket chat, attachments | 11 |
 | `tests/tickets.spec.ts` | My tickets, details, reply, access | 6 |
 | `tests/create-ticket.spec.ts` | Create ticket (submit + validation) | 3 (1 skipped) |
 | `tests/credentials-vault.spec.ts` | Credentials vault CRUD | 1 |
 | `tests/profile.spec.ts` | Customer profile update | 1 |
-| **Total** | | **40** |
+| `tests/conversation.spec.ts` | Two-way customer ↔ admin conversation | 1 |
+| **Total** | | **42** |
 
 ## Admin Tests (`tests/admin.spec.ts`)
 
 | Test | Tags | What it verifies |
 | --- | --- | --- |
-| auth: admin can view dashboard | @smoke @regression @admin | Admin login via `/wp-login.php` and the dashboard core menu renders |
+| auth: admin can view dashboard | @smoke @regression @admin | Opens the Robodesk dashboard with the cached admin session and asserts the core menu renders (login itself is covered once by the `adminTest` fixture when the session cache is missing or expired) |
 | profile: profile page loads | @regression @admin | Profile page opens for the admin session |
 | helpers: create ticket and show toast | @regression @customer | Ticket creation flow on `/submit-ticket/` and the success toast appears |
 | helpers: reply to ticket and status change | @regression @admin | Opens a ticket from the Robodesk dashboard (`admin.php?page=robodesk-dashboard&tab=dashboard&ticket=N`), posts a reply via `#new-reply` + `#send-reply-btn`, changes status via `#ticket-status-select` |
@@ -79,6 +81,7 @@ npx playwright test tickets.spec.ts --grep "reply to ticket"
 | auth: widget login blocked for empty email | @regression @customer | Empty submit keeps the login form open |
 | auth: widget shows inline errors and skips API call for empty credentials | @regression @customer | Empty email → "Your email address is needed to continue." and empty password → "Password is required."; asserts no auth POST fires for either |
 | auth: widget rejects wrong password with no session | @smoke @regression @customer | Wrong password shows "Oops! That's not the right password." and no conversation view is rendered |
+| auth: widget blocks new-user registration when disabled | @regression @customer | Entering a fresh (non-existent) email shows "Registration is currently disabled." and keeps the login form open with no session |
 
 ## Chat Widget Tests (`tests/chat.spec.ts`)
 
@@ -87,7 +90,7 @@ npx playwright test tickets.spec.ts --grep "reply to ticket"
 | chat: home page renders chat widget container | @regression @chat | Chat widget container is present on the home page |
 | customer: can use the frontend chat widget | @regression @customer | Widget opens from the home page |
 | chat: customer starts a chat conversation after login | @smoke @regression @customer | Sends a message from the widget chat tab and asserts the sent bubble appears |
-| chat: search filters conversations in the widget | @smoke @regression @customer | Search narrows the ticket list; a no-match term shows "No tickets found"; clearing restores the list |
+| chat: search filters conversations in the widget | @smoke @regression @customer | Search narrows the ticket list; the term is derived from the first loaded row (data-independent); a no-match term shows "No tickets found"; clearing restores the list |
 | chat: priority and status filters work in the widget | @regression @customer | Priority and status selects filter the conversation list correctly |
 | chat: FAQ tab lists questions and search filters them | @regression @customer | FAQ tab (4th tab) shows `.rd-faq-item` questions; searching "Search your answer here" narrows to matching titles; no-match → 0 items; clearing restores |
 | chat: FAQ detail opens from the FAQ list | @regression @customer | Clicking a `.rd-faq-item` opens the FAQ detail (back button visible, title shown); back returns to the list |
@@ -111,7 +114,7 @@ npx playwright test tickets.spec.ts --grep "reply to ticket"
 | portal: my tickets page lists tickets and filters work | @smoke @regression @customer | `?robodesk_page=my-tickets` renders filters (priority, status, order) and the ticket table; status filter applies |
 | portal: customer can open ticket details from my tickets | @regression @customer | Clicking a ticket link opens the frontend detail view (`/robodesk-support/?robodesk_page=my-tickets&tid=N`) |
 | portal: customer can reply to ticket from details page | @regression @customer | Types into the reply editor (`iframe#comment_ifr`), submits via "Add Reply", and asserts the reply renders |
-| portal: customer cannot view another user's ticket via direct link | @regression @customer | Direct `tid=` link to another user's ticket shows "You do not have permission to view this ticket." and no comment form |
+| portal: customer cannot view another user's ticket via direct link | @regression @customer | Self-contained: the admin creates a ticket (via `conversationTest` fixture), its id is read from the dashboard "Active Conversations" view, and the customer opening `tid=` that ticket sees "You do not have permission to view this ticket." with no comment form |
 | portal: non-existent ticket id falls back safely to list | @regression @customer | `tid=999999` renders the ticket list instead of crashing or leaking data |
 
 ## Create Ticket Tests (`tests/create-ticket.spec.ts`)
@@ -133,6 +136,12 @@ npx playwright test tickets.spec.ts --grep "reply to ticket"
 | Test | Tags | What it verifies |
 | --- | --- | --- |
 | portal: customer can update profile first name | @regression @customer | `?robodesk_page=profile` renders the form; updating the first name shows "Profile updated successfully!" and persists across reload; original value is restored afterward |
+
+## Conversation Tests (`tests/conversation.spec.ts`)
+
+| Test | Tags | What it verifies |
+| --- | --- | --- |
+| conversation: customer (widget) and admin (backend) exchange replies on one ticket | @regression @admin @customer | Full round-trip in **two separate browser contexts** (`conversationTest` fixture: `customerPage` with the cached widget session + `adminPage` with the cached admin session): customer creates a ticket from the portal (`?robodesk_page=create-ticket`); admin finds it via the dashboard "Active Conversations" view, opens it, and replies from the wp-admin ticket view (`#new-reply` + `#send-reply-btn`); customer opens the same ticket in the chat widget (search + single-ticket view), sees the admin reply, and replies back; admin reloads the ticket view and sees the customer's reply |
 
 ## Test Tags
 
@@ -163,7 +172,7 @@ src/
 ├── helpers/
 │   └── robodeskHelpers.ts    # login, createTicket, reply, changeStatus, toast
 ├── fixtures/
-│   └── roles.ts              # test + portalTest/widgetTest/adminTest (storageState reuse)
+│   └── roles.ts              # test + portalTest/widgetTest/adminTest/conversationTest (storageState reuse)
 └── data/
     └── fakeData.ts           # random ticket/reply/user data
 ```
@@ -171,9 +180,11 @@ src/
 ## Notes & Known Constraints
 
 - **Server-side rate limiting**: the widget email-check endpoint allows **10 checks per IP per hour** and blocks further checks with "Too many attempts. Please try again later." All local requests share one IP, so the whole suite shares the budget. The portal tests mitigate this by logging in once per worker and caching the session to `.state/customer-widget-storage.json`. If a cached session expires, delete that file and wait for the hourly limit to reset. The password login (`/wp-json/robodesk/v1/login`) is not rate limited.
-- **Admin one-time login**: admin feature tests use the `adminTest` fixture, which logs in once per worker via `/wp-login.php` and caches the session to `.state/admin-wp-storage.json` (validated on reuse, refreshed when expired). The only test that performs a full login flow is `auth: admin can view dashboard`.
+- **Admin one-time login**: admin feature tests use the `adminTest` fixture, which logs in once per worker via `/wp-login.php` and caches the session to `.state/admin-wp-storage.json` (validated on reuse, refreshed when expired). No spec-level test performs the full wp-login flow anymore; the login path is exercised by the fixture itself whenever the cache is missing or expired.
+- **Dashboard default filter**: the admin dashboard loads with the "My Conversations" view (`filter=my_conversation`, agent=admin). The conversation test clicks "Active Conversations" to list all open tickets; the tickets table also truncates titles to 20 characters, so row lookups filter by `title.slice(0, 20)`.
 - **Admin suite timeout**: the admin spec sets `test.setTimeout(180000)` because the local server can be slow under load; dashboard pages can take over a minute to fully render.
 - **TinyMCE editor**: the create-ticket description field is a hidden `textarea#ticket_content`; tests type into `iframe#ticket_content_ifr`. The customer reply editor on ticket details is `iframe#comment_ifr`.
 - **Admin reply/status**: performed from the Robodesk dashboard ticket view (not the wp-admin post editor), using `#new-reply`, `#send-reply-btn`, and `#ticket-status-select`.
 - **Vault delete**: deletion triggers a native `confirm()` dialog which the page object accepts.
-- **Skipped test**: the `/submit-ticket/` form scenario stays skipped until the live UI renders the expected form.
+- **Skipped test**: the `/submit-ticket/` form scenario stays skipped until the live UI renders the expected form. Note that `/submit-ticket/` does not render the ticket form on this site for any role — the supported path is the portal `?robodesk_page=create-ticket` page.
+- **Rate-limit resets**: the limiter stores per-IP counters in `wp_options` transients (`robodesk_email_check_rate_*`, 1-hour TTL). During development the counters can be cleared directly from the Local site's MySQL socket: `delete from wp_options where option_name like '%robodesk_email_check_rate_%'`. Avoid re-running the auth suite more than twice per hour (4 email checks per run).

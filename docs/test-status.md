@@ -14,6 +14,7 @@ npx playwright test tickets.spec.ts     # my tickets, details, reply, access
 npx playwright test create-ticket.spec.ts
 npx playwright test credentials-vault.spec.ts
 npx playwright test profile.spec.ts
+npx playwright test conversation.spec.ts # two-way customer + admin conversation
 ```
 
 See [docs/tests.md](tests.md) for the full test documentation.
@@ -24,7 +25,7 @@ See [docs/tests.md](tests.md) for the full test documentation.
 
 | Test | Status | Notes |
 | --- | --- | --- |
-| auth: admin can view dashboard | Verified | Admin login + dashboard |
+| auth: admin can view dashboard | Verified | Dashboard renders with cached admin session (login covered by fixture) |
 | profile: profile page loads | Verified | |
 | helpers: create ticket and show toast | Verified | Ticket creation + toast |
 | helpers: reply to ticket and status change | Verified | Dashboard ticket view reply + status change |
@@ -37,7 +38,7 @@ See [docs/tests.md](tests.md) for the full test documentation.
 | notice: create, publish and trash a notice | Verified | Classic editor publish + trash |
 | debug log: page loads | Verified | |
 
-### Auth suite (`auth.spec.ts`) — 6 tests
+### Auth suite (`auth.spec.ts`) — 7 tests
 
 | Test | Status | Notes |
 | --- | --- | --- |
@@ -47,6 +48,7 @@ See [docs/tests.md](tests.md) for the full test documentation.
 | auth: widget login blocked for empty email | Verified | |
 | auth: widget shows inline errors and skips API call for empty credentials | Verified | Inline errors, no auth POST for empty submits |
 | auth: widget rejects wrong password with no session | Verified | "Oops! That's not the right password." + no session |
+| auth: widget blocks new-user registration when disabled | Verified | Fresh email → "Registration is currently disabled.", login form stays, no session |
 
 ### Chat widget suite (`chat.spec.ts`) — 11 tests
 
@@ -72,7 +74,7 @@ See [docs/tests.md](tests.md) for the full test documentation.
 | portal: my tickets page lists tickets and filters work | Verified | Filters + ticket table |
 | portal: customer can open ticket details from my tickets | Verified | Frontend `tid=N` detail view |
 | portal: customer can reply to ticket from details page | Verified | TinyMCE `#comment_ifr` reply + Add Reply |
-| portal: customer cannot view another user's ticket via direct link | Verified | Permission message, no comment form |
+| portal: customer cannot view another user's ticket via direct link | Verified | Admin creates the ticket; customer opening it via `tid=` gets the permission message |
 | portal: non-existent ticket id falls back safely to list | Verified | Falls back to list, no crash |
 
 ### Create ticket suite (`create-ticket.spec.ts`) — 3 tests (1 skipped)
@@ -95,14 +97,23 @@ See [docs/tests.md](tests.md) for the full test documentation.
 | --- | --- | --- |
 | portal: customer can update profile first name | Verified | Update persists; original value restored |
 
+### Conversation suite (`conversation.spec.ts`) — 1 test
+
+| Test | Status | Notes |
+| --- | --- | --- |
+| conversation: customer (widget) and admin (backend) exchange replies on one ticket | Verified | Two browser contexts: customer creates ticket in portal, admin replies from wp-admin ticket view, customer replies from the chat widget, admin reloads and sees it |
+
 ## Known Constraints
 
 - **Server-side rate limiting**: the widget email-check endpoint allows **10 checks per IP per hour** ("Too many attempts. Please try again later."). All local requests share one IP, so the whole suite shares the budget. Portal tests log in once per worker and cache the session to `.state/customer-widget-storage.json`; delete that file to force a fresh login. The password login REST endpoint is not rate limited.
 - Portal tests rely on a valid cached session (`.state/customer-widget-storage.json`); if it expires server-side, delete it and re-run.
 - Admin tests log in once per worker and cache the session to `.state/admin-wp-storage.json` (delete to force a fresh login); the suite uses a 180s per-test timeout because dashboard pages can load slowly under load.
+- The conversation test uses the `conversationTest` fixture (customer + admin contexts in one test) and relies on the dashboard "Active Conversations" view; the tickets table truncates titles to 20 characters, so tests match on the truncated prefix.
+- The rate-limit transients (`robodesk_email_check_rate_*` in `wp_options`, 1-hour TTL) can be cleared manually during development via the Local MySQL socket; avoid running the auth suite more than twice per hour (4 email checks per run).
 
 ## Planned Next Steps
 
 - Revisit the /submit-ticket/ form scenario when the live UI exposes the expected elements
 - Add more negative coverage (XSS sanitization, long titles, rate-limit lockout assertion)
 - Expand coverage for settings and support-staff permissions (settings page currently returns 403 for the test admin role)
+- Possible extensions of the two-way conversation test: image attachment from the widget in the same thread, customer status change, notification badges

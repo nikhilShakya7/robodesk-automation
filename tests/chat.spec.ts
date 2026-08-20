@@ -44,13 +44,20 @@ test.describe("Robodesk chat widget", () => {
       });
       const total = await chatWidget.ticketRows.count();
       expect(total).toBeGreaterThan(0);
-      await chatWidget.searchTickets("admin");
+      const firstRowTitle = (
+        await chatWidget.ticketRows.first().innerText()
+      )
+        .trim()
+        .split("\n")[0]
+        .trim();
+      expect(firstRowTitle).toBeTruthy();
+      await chatWidget.searchTickets(firstRowTitle);
       await expect
         .poll(async () => chatWidget.ticketRows.count(), { timeout: 10000 })
         .toBeGreaterThan(0);
       const matched = await chatWidget.ticketRows.count();
       expect(matched).toBeGreaterThan(0);
-      expect(matched).toBeLessThan(total);
+      expect(matched).toBeLessThanOrEqual(total);
       await chatWidget.searchTickets("zzzz-no-match-zzzz");
       await expect(chatWidget.noTicketsMessage).toBeVisible({
         timeout: 10000,

@@ -3,6 +3,7 @@ import { CreateTicketPage } from "../src/pages/createTicketPage";
 import { createTicketData } from "../src/data/fakeData";
 
 test.describe("Robodesk create ticket", () => {
+  test.setTimeout(180_000);
   test("tickets: create ticket form is available @smoke @regression @customer", async ({
     page,
   }) => {

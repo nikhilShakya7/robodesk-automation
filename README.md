@@ -34,6 +34,7 @@ npx playwright test tickets.spec.ts     # my tickets, details, reply, access
 npx playwright test create-ticket.spec.ts
 npx playwright test credentials-vault.spec.ts
 npx playwright test profile.spec.ts
+npx playwright test conversation.spec.ts # two-way customer + admin conversation
 
 # By tag
 npx playwright test --grep "@smoke"
@@ -50,13 +51,14 @@ Reports: HTML report in `playwright-report/` (`npx playwright show-report`), plu
 
 ## What is covered
 
-- **Auth** (`tests/auth.spec.ts`): guest prompt, widget login (existing user email + password), invalid/empty email, empty credentials (inline errors, no API call), wrong password rejection
+- **Auth** (`tests/auth.spec.ts`): guest prompt, widget login (existing user email + password), invalid/empty email, empty credentials (inline errors, no API call), wrong password rejection, new-user registration blocked when disabled
 - **Chat widget** (`tests/chat.spec.ts`): widget presence, conversation creation, search/filters, FAQ tab (search + detail), notices tab, single-ticket chat view, image attachment, special-char search negatives
 - **Tickets** (`tests/tickets.spec.ts`): my tickets list + filters, ticket details, customer reply, access negatives (another user's ticket, non-existent id)
 - **Create ticket** (`tests/create-ticket.spec.ts`): TinyMCE form submit, empty-title block
 - **Credentials vault** (`tests/credentials-vault.spec.ts`): add/delete credentials
 - **Profile** (`tests/profile.spec.ts`): update first name (with restore)
-- **Admin** (`tests/admin.spec.ts`): login + dashboard, profile page, ticket creation + toast, dashboard reply + status change, bulk status change, priority/assignee persistence, departments/priorities add+delete, FAQ/notice create+trash, debug log
+- **Admin** (`tests/admin.spec.ts`): dashboard, profile page, ticket creation + toast, dashboard reply + status change, bulk status change, priority/assignee persistence, departments/priorities add+delete, FAQ/notice create+trash, debug log
+- **Conversation** (`tests/conversation.spec.ts`): end-to-end two-way exchange on one ticket — customer replies from the chat widget, admin replies from the wp-admin backend, across two separate browser contexts
 
 ## Architecture
 
@@ -97,7 +99,8 @@ Reports: HTML report in `playwright-report/` (`npx playwright show-report`), plu
 
 - **Widget login for existing users**: the chat widget checks the email first (`wp-admin/admin-ajax.php?action=robodesk_check_email`); if the user exists, a password field appears (button changes from Continue to Login). New users are auto-registered and have no password step.
 - **Portal session reuse**: `portalTest` logs the customer in once per worker through the widget and caches the session to `.state/customer-widget-storage.json`, so the portal tests don't repeatedly hit the server-side login rate limiter. Delete that file to force a fresh login.
-- **Admin session reuse**: `adminTest` logs the admin in once per worker via `/wp-login.php` and caches the session to `.state/admin-wp-storage.json`; every admin feature test runs from that single session. Delete that file to force a fresh login.
+- **Admin session reuse**: `adminTest` logs the admin in once per worker via `/wp-login.php` and caches the session to `.state/admin-wp-storage.json`; every admin feature test (including the dashboard smoke test) runs from that single cached session. Delete that file to force a fresh login.
+- **Two-context conversation test**: `conversationTest` in `src/fixtures/roles.ts` provides `customerPage` (cached widget session) and `adminPage` (cached admin session) in the same test, so a single test can drive both sides of a conversation.
 - **Server-side rate limiting**: the email-check endpoint allows **10 checks per IP per hour** and returns "Too many attempts. Please try again later." beyond that. All local requests share one IP, so the whole suite shares the budget. If tests hit this, wait for the hourly transient to expire. The actual password login (`/wp-json/robodesk/v1/login`) is not rate limited.
 - **TinyMCE**: the create-ticket description is a hidden `textarea#ticket_content`; tests type into `iframe#ticket_content_ifr`. The customer reply editor on ticket details is `iframe#comment_ifr`.
 - **Admin reply/status**: done from the Robodesk dashboard ticket view (`admin.php?page=robodesk-dashboard&tab=dashboard&ticket=N`), replying via the `#new-reply` editor and `#send-reply-btn`, changing status via `#ticket-status-select`.

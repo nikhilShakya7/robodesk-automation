@@ -1,6 +1,7 @@
-import { test, expect, portalTest } from "../src/fixtures/roles";
+import { test, expect, portalTest, conversationTest } from "../src/fixtures/roles";
 import { MyTicketsPage } from "../src/pages/myTicketsPage";
 import { TicketDetailsPage } from "../src/pages/ticketDetailsPage";
+import { CreateTicketPage } from "../src/pages/createTicketPage";
 import { createReplyData } from "../src/data/fakeData";
 
 test.describe("Robodesk tickets", () => {
@@ -57,14 +58,37 @@ test.describe("Robodesk tickets", () => {
       },
     );
 
-    portalTest(
+    conversationTest(
       "portal: customer cannot view another user's ticket via direct link @regression @customer",
-      async ({ page }) => {
-        await page.goto("/robodesk-support/?robodesk_page=my-tickets&tid=76");
-        await expect(page.locator("body")).toContainText(
-          /do not have permission to view this ticket/i,
+      async ({ customerPage, adminPage }) => {
+        const title = `QA Other User ${Date.now()}`;
+        const create = new CreateTicketPage(adminPage);
+        await create.openCreateTicket();
+        await create.createTicket({ title, description: "other user ticket" });
+
+        await adminPage.goto(
+          "/wp-admin/admin.php?page=robodesk-dashboard&tab=dashboard",
         );
-        await expect(page.locator("#commentform")).toHaveCount(0);
+        await adminPage
+          .getByRole("button", { name: /active conversations/i })
+          .first()
+          .click();
+        const row = adminPage
+          .locator("tr[data-ticketid]")
+          .filter({ hasText: title.slice(0, 20) })
+          .first();
+        await expect(row).toBeVisible({ timeout: 30000 });
+        const otherTicketId = await row.getAttribute("data-ticketid");
+        expect(otherTicketId).toBeTruthy();
+
+        await customerPage.goto(
+          `/robodesk-support/?robodesk_page=my-tickets&tid=${otherTicketId}`,
+        );
+        await expect(customerPage.locator("body")).toContainText(
+          /do not have permission to view this ticket/i,
+          { timeout: 15000 },
+        );
+        await expect(customerPage.locator("#commentform")).toHaveCount(0);
       },
     );
 

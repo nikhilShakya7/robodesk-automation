@@ -30,7 +30,9 @@ export class CreateTicketPage extends BasePage {
   }
 
   get submitButton() {
-    return this.page.locator('form input[type="submit"]:not(#wp-link-submit)');
+    return this.page.locator(
+      'form#robodesk-create-ticket input[type="submit"]',
+    );
   }
 
   // Navigation

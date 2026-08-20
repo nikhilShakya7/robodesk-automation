@@ -64,6 +64,12 @@ export class ChatWidgetPage extends BasePage {
     return this.page.locator("#password-error");
   }
 
+  get registrationMessage() {
+    return this.page.locator(".robodesk-popup.open").getByText(
+      /registration is currently disabled/i,
+    );
+  }
+
   get conversationsView() {
     return this.page.locator("#keyword-search");
   }

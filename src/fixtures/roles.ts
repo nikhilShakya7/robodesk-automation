@@ -222,5 +222,13 @@ export const adminTest = base.extend({
   page: authenticatedAdminContextFixture(),
 });
 
+export const conversationTest = base.extend<{
+  customerPage: Page;
+  adminPage: Page;
+}>({
+  customerPage: authenticatedContextFixture(),
+  adminPage: authenticatedAdminContextFixture(),
+});
+
 export const expect = base.expect;
 export const portalExpect = base.expect;
