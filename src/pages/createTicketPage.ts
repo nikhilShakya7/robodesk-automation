@@ -30,9 +30,9 @@ export class CreateTicketPage extends BasePage {
   }
 
   get submitButton() {
-    return this.page.locator(
-      'form#robodesk-create-ticket input[type="submit"]',
-    );
+    return this.page
+      .locator("form#robodesk-create-ticket")
+      .getByRole("button", { name: /create ticket/i });
   }
 
   // Navigation
@@ -81,11 +81,21 @@ export class CreateTicketPage extends BasePage {
     await this.fillDescription(data.description);
 
     if (data.priority) {
-      await this.prioritySelect
-        .selectOption({ label: data.priority })
-        .catch(() => {
-          // Ignore if the provided priority doesn't exist
-        });
+      const priorityValue = await this.prioritySelect
+        .locator("option")
+        .evaluateAll((options, priority) => {
+          const normalizedPriority = String(priority).toLowerCase();
+          return (
+            options.find(
+              (option) =>
+                option.textContent?.trim().toLowerCase() === normalizedPriority,
+            ) as HTMLOptionElement | undefined
+          )?.value;
+        }, data.priority);
+
+      if (priorityValue) {
+        await this.prioritySelect.selectOption({ value: priorityValue });
+      }
     }
 
     await this.submitButton.scrollIntoViewIfNeeded();
