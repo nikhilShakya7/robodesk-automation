@@ -9,3 +9,11 @@ node_modules/
 /.state/
 .env
 .env.local
+/.opencode/
+opencode.json
+docs/test-status.md
+docs/test-status.md
+docs/tests.md
+
+tests/seed.spec.ts
+specs/README.md

@@ -57,7 +57,7 @@ Reports: HTML report in `playwright-report/` (`npx playwright show-report`), plu
 - **Create ticket** (`tests/create-ticket.spec.ts`): TinyMCE form submit, empty-title block
 - **Credentials vault** (`tests/credentials-vault.spec.ts`): add/delete credentials
 - **Profile** (`tests/profile.spec.ts`): update first name (with restore)
-- **Admin** (`tests/admin.spec.ts`): dashboard, profile page, ticket creation + toast, dashboard reply + status change, bulk status change, priority/assignee persistence, departments/priorities add+delete, FAQ/notice create+trash, debug log
+- **Admin** (`tests/admin.spec.ts`): dashboard, profile page, ticket creation + toast, dashboard reply + status change, ticket search and filters, pagination, bulk status changes, priority/assignee persistence, departments/priorities add+delete, FAQ/notice create+trash, debug log
 - **Conversation** (`tests/conversation.spec.ts`): end-to-end two-way exchange on one ticket — customer replies from the chat widget, admin replies from the wp-admin backend, across two separate browser contexts
 
 ## Architecture
@@ -112,20 +112,20 @@ Captured from the live local site (logged-in sessions) using the same flows the 
 
 ### Admin
 
-| Admin ticket view (reply + status) | All tickets view (bulk actions) |
-| --- | --- |
+| Admin ticket view (reply + status)                           | All tickets view (bulk actions)                        |
+| ------------------------------------------------------------ | ------------------------------------------------------ |
 | ![Admin ticket view](docs/screenshots/admin-ticket-view.png) | ![All tickets](docs/screenshots/admin-all-tickets.png) |
 
 ### Support portal (customer)
 
-| My tickets | Create ticket | Credentials vault |
-| --- | --- | --- |
+| My tickets                                            | Create ticket                                               | Credentials vault                                                   |
+| ----------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------- |
 | ![My tickets](docs/screenshots/portal-my-tickets.png) | ![Create ticket](docs/screenshots/portal-create-ticket.png) | ![Credentials vault](docs/screenshots/portal-credentials-vault.png) |
 
 ### Chat widget (customer, logged in)
 
-| Conversations tab | FAQ tab |
-| --- | --- |
+| Conversations tab                                                  | FAQ tab                                        |
+| ------------------------------------------------------------------ | ---------------------------------------------- |
 | ![Widget conversations](docs/screenshots/widget-conversations.png) | ![Widget FAQ](docs/screenshots/widget-faq.png) |
 
 Screenshots live in `docs/screenshots/`. Re-capture any time with a logged-in session (they reflect the current site data).

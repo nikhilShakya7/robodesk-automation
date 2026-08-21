@@ -1,6 +1,7 @@
 # Robodesk Playwright Test Status
 
 ## Overview
+
 Current Playwright test coverage for the Robodesk project, organized feature-wise: one spec file per feature under `tests/`.
 
 ## Running
@@ -21,86 +22,96 @@ See [docs/tests.md](tests.md) for the full test documentation.
 
 ## Verification Status
 
-### Admin suite (`admin.spec.ts`) — 12 tests
+### Admin suite (`admin.spec.ts`) — 22 tests
 
-| Test | Status | Notes |
-| --- | --- | --- |
-| auth: admin can view dashboard | Verified | Dashboard renders with cached admin session (login covered by fixture) |
-| profile: profile page loads | Verified | |
-| helpers: create ticket and show toast | Verified | Ticket creation + toast |
-| helpers: reply to ticket and status change | Verified | Dashboard ticket view reply + status change |
-| dashboard: bulk set status to Open from all tickets view | Verified | All-tickets view, checkbox + bulk-action Apply |
-| ticket: priority change persists on dashboard ticket view | Verified | Change → reload → persists; original restored |
-| ticket: assignee change persists on dashboard ticket view | Verified | Change → reload → persists; original restored |
-| departments: add and delete a category | Verified | Taxonomy add + JS confirm dialog accept + delete |
-| priorities: add and delete a category | Verified | Taxonomy add + JS confirm dialog accept + delete |
-| faq: create, publish and trash a FAQ | Verified | Classic editor publish + trash |
-| notice: create, publish and trash a notice | Verified | Classic editor publish + trash |
-| debug log: page loads | Verified | |
+| Test                                                        | Status   | Notes                                                                  |
+| ----------------------------------------------------------- | -------- | ---------------------------------------------------------------------- |
+| auth: admin can view dashboard                              | Verified | Dashboard renders with cached admin session (login covered by fixture) |
+| profile: profile page loads                                 | Verified |                                                                        |
+| helpers: create ticket and show toast                       | Verified | Ticket creation + toast                                                |
+| helpers: reply to ticket and status change                  | Verified | Dashboard ticket view reply + status change                            |
+| dashboard: bulk set status to Open from all tickets view    | Verified | All-tickets view, checkbox + bulk-action Apply                         |
+| ticket: priority change persists on dashboard ticket view   | Verified | Change → reload → persists; original restored                          |
+| ticket: assignee change persists on dashboard ticket view   | Verified | Change → reload → persists; original restored                          |
+| departments: add and delete a category                      | Verified | Taxonomy add + JS confirm dialog accept + delete                       |
+| priorities: add and delete a category                       | Verified | Taxonomy add + JS confirm dialog accept + delete                       |
+| faq: create, publish and trash a FAQ                        | Verified | Classic editor publish + trash                                         |
+| notice: create, publish and trash a notice                  | Verified | Classic editor publish + trash                                         |
+| debug log: page loads                                       | Verified |                                                                        |
+| tickets: search by keyword filters conversation list        | Verified | Search input updates the ticket table                                  |
+| tickets: customer filter by name narrows results            | Verified | Customer autocomplete filter                                           |
+| tickets: agent filter by name narrows results               | Verified | Agent autocomplete filter                                              |
+| tickets: status filter dropdown filters by status           | Verified | Status selection is retained and table remains stable                  |
+| tickets: priority filter dropdown filters by priority       | Verified | Priority selection is retained and table remains stable                |
+| tickets: per page dropdown changes page size                | Verified | 10, 20, and 50 row limits                                              |
+| tickets: clear filters resets all filters                   | Verified | Search and filter controls reset to the default dataset                |
+| tickets: combined status and priority filters work together | Verified | Status and priority controls can be selected together                  |
+| tickets: pagination next/prev works                         | Verified | Next and previous pages show different rows                            |
+| tickets: bulk actions work with filters applied             | Verified | Bulk status update confirmation and cleanup                            |
 
 ### Auth suite (`auth.spec.ts`) — 7 tests
 
-| Test | Status | Notes |
-| --- | --- | --- |
-| portal: guest sees login prompt | Verified | |
-| auth: customer logs in via chat widget and creates a ticket | Verified | Email + password widget login, then ticket creation |
-| auth: widget login blocked for invalid email format | Verified | |
-| auth: widget login blocked for empty email | Verified | |
-| auth: widget shows inline errors and skips API call for empty credentials | Verified | Inline errors, no auth POST for empty submits |
-| auth: widget rejects wrong password with no session | Verified | "Oops! That's not the right password." + no session |
-| auth: widget blocks new-user registration when disabled | Verified | Fresh email → "Registration is currently disabled.", login form stays, no session |
+| Test                                                                      | Status   | Notes                                                                             |
+| ------------------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------- |
+| portal: guest sees login prompt                                           | Verified |                                                                                   |
+| auth: customer logs in via chat widget and creates a ticket               | Verified | Email + password widget login, then ticket creation                               |
+| auth: widget login blocked for invalid email format                       | Verified |                                                                                   |
+| auth: widget login blocked for empty email                                | Verified |                                                                                   |
+| auth: widget shows inline errors and skips API call for empty credentials | Verified | Inline errors, no auth POST for empty submits                                     |
+| auth: widget rejects wrong password with no session                       | Verified | "Oops! That's not the right password." + no session                               |
+| auth: widget blocks new-user registration when disabled                   | Verified | Fresh email → "Registration is currently disabled.", login form stays, no session |
 
 ### Chat widget suite (`chat.spec.ts`) — 11 tests
 
-| Test | Status | Notes |
-| --- | --- | --- |
-| chat: home page renders chat widget container | Verified | |
-| customer: can use the frontend chat widget | Verified | |
-| chat: customer starts a chat conversation after login | Verified | Sent message bubble asserted |
-| chat: search filters conversations in the widget | Verified | Search narrows, no-match message, restore |
-| chat: priority and status filters work in the widget | Verified | |
-| chat: FAQ tab lists questions and search filters them | Verified | `.rd-faq-item` count narrows to matching subset, no-match → 0, clear restores |
-| chat: FAQ detail opens from the FAQ list | Verified | Click item → detail with back button; back restores list |
-| chat: notices render in the widget | Verified | `.rd-notice-item` items render with Notices header |
-| chat: ticket row opens single-ticket chat view and back returns to list | Verified | Message input + back button; back restores list |
-| chat: customer sends an image attachment in a ticket | Verified | Uploads `test-data/tiny.jpeg` via hidden `input[type=file]`, preview `.has-preview`, sent message gains image |
-| chat: search handles special characters without crashing | Verified | `.*`, `[abc`, `a+b*c?`, whitespace → no-match message; clear restores |
+| Test                                                                    | Status   | Notes                                                                                                         |
+| ----------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------- |
+| chat: home page renders chat widget container                           | Verified |                                                                                                               |
+| customer: can use the frontend chat widget                              | Verified |                                                                                                               |
+| chat: customer starts a chat conversation after login                   | Verified | Sent message bubble asserted                                                                                  |
+| chat: search filters conversations in the widget                        | Verified | Search narrows, no-match message, restore                                                                     |
+| chat: priority and status filters work in the widget                    | Verified |                                                                                                               |
+| chat: FAQ tab lists questions and search filters them                   | Verified | `.rd-faq-item` count narrows to matching subset, no-match → 0, clear restores                                 |
+| chat: FAQ detail opens from the FAQ list                                | Verified | Click item → detail with back button; back restores list                                                      |
+| chat: notices render in the widget                                      | Verified | `.rd-notice-item` items render with Notices header                                                            |
+| chat: ticket row opens single-ticket chat view and back returns to list | Verified | Message input + back button; back restores list                                                               |
+| chat: customer sends an image attachment in a ticket                    | Verified | Uploads `test-data/tiny.jpeg` via hidden `input[type=file]`, preview `.has-preview`, sent message gains image |
+| chat: search handles special characters without crashing                | Verified | `.*`, `[abc`, `a+b*c?`, whitespace → no-match message; clear restores                                         |
 
 ### Tickets suite (`tickets.spec.ts`) — 6 tests
 
-| Test | Status | Notes |
-| --- | --- | --- |
-| tickets: customer can open my tickets page | Verified | |
-| portal: my tickets page lists tickets and filters work | Verified | Filters + ticket table |
-| portal: customer can open ticket details from my tickets | Verified | Frontend `tid=N` detail view |
-| portal: customer can reply to ticket from details page | Verified | TinyMCE `#comment_ifr` reply + Add Reply |
+| Test                                                               | Status   | Notes                                                                                |
+| ------------------------------------------------------------------ | -------- | ------------------------------------------------------------------------------------ |
+| tickets: customer can open my tickets page                         | Verified |                                                                                      |
+| portal: my tickets page lists tickets and filters work             | Verified | Filters + ticket table                                                               |
+| portal: customer can open ticket details from my tickets           | Verified | Frontend `tid=N` detail view                                                         |
+| portal: customer can reply to ticket from details page             | Verified | TinyMCE `#comment_ifr` reply + Add Reply                                             |
 | portal: customer cannot view another user's ticket via direct link | Verified | Admin creates the ticket; customer opening it via `tid=` gets the permission message |
-| portal: non-existent ticket id falls back safely to list | Verified | Falls back to list, no crash |
+| portal: non-existent ticket id falls back safely to list           | Verified | Falls back to list, no crash                                                         |
 
 ### Create ticket suite (`create-ticket.spec.ts`) — 3 tests (1 skipped)
 
-| Test | Status | Notes |
-| --- | --- | --- |
-| tickets: create ticket form is available | Skipped | TODO: live UI does not render the form on /submit-ticket/ |
-| portal: create ticket form renders and submits a ticket | Verified | TinyMCE form + successful submit |
-| portal: create ticket blocks empty title without creating a ticket | Verified | Native validation: no POST, no success |
+| Test                                                               | Status   | Notes                                                     |
+| ------------------------------------------------------------------ | -------- | --------------------------------------------------------- |
+| tickets: create ticket form is available                           | Skipped  | TODO: live UI does not render the form on /submit-ticket/ |
+| portal: create ticket form renders and submits a ticket            | Verified | TinyMCE form + successful submit                          |
+| portal: create ticket blocks empty title without creating a ticket | Verified | Native validation: no POST, no success                    |
 
 ### Credentials vault suite (`credentials-vault.spec.ts`) — 1 test
 
-| Test | Status | Notes |
-| --- | --- | --- |
+| Test                                                    | Status   | Notes                                   |
+| ------------------------------------------------------- | -------- | --------------------------------------- |
 | portal: credentials vault shows and stores a credential | Verified | Add persists, delete via confirm dialog |
 
 ### Profile suite (`profile.spec.ts`) — 1 test
 
-| Test | Status | Notes |
-| --- | --- | --- |
+| Test                                           | Status   | Notes                                    |
+| ---------------------------------------------- | -------- | ---------------------------------------- |
 | portal: customer can update profile first name | Verified | Update persists; original value restored |
 
 ### Conversation suite (`conversation.spec.ts`) — 1 test
 
-| Test | Status | Notes |
-| --- | --- | --- |
+| Test                                                                               | Status   | Notes                                                                                                                                                              |
+| ---------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | conversation: customer (widget) and admin (backend) exchange replies on one ticket | Verified | Two browser contexts: customer creates ticket in portal, admin replies from wp-admin ticket view, customer replies from the chat widget, admin reloads and sees it |
 
 ## Known Constraints
