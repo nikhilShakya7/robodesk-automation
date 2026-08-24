@@ -79,16 +79,11 @@ export class CredentialsVaultPage extends BasePage {
   }
 
   async deleteCredential(name: string) {
-    const dialogHandled = new Promise<void>((resolve) => {
-      this.page.once("dialog", async (dialog) => {
-        await dialog.accept();
-        resolve();
-      });
-    });
     const button = this.deleteCredentialButton(name);
     await button.scrollIntoViewIfNeeded().catch(() => undefined);
-    await button.click({ force: true, timeout: 10000 }).catch(() => undefined);
-    await dialogHandled;
+    this.page.once("dialog", (dialog) => dialog.accept());
+    await button.click({ force: true, noWaitAfter: true, timeout: 10000 });
+    await expect(this.credentialRow(name)).toHaveCount(0, { timeout: 15000 });
   }
 
   async expectCredentialVisible(name: string) {
@@ -96,6 +91,6 @@ export class CredentialsVaultPage extends BasePage {
   }
 
   async expectCredentialHidden(name: string) {
-    await expect(this.credentialRow(name)).toHaveCount(1);
+    await expect(this.credentialRow(name)).toHaveCount(0, { timeout: 15000 });
   }
 }
