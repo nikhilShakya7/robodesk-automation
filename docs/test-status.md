@@ -9,6 +9,7 @@ Current Playwright test coverage for the Robodesk project, organized feature-wis
 ```bash
 npx playwright test                     # full suite
 npx playwright test admin.spec.ts       # admin features
+npx playwright test filters.spec.ts     # tickets-tab filters
 npx playwright test auth.spec.ts        # widget login / auth
 npx playwright test chat.spec.ts        # chat widget + search/filters
 npx playwright test tickets.spec.ts     # my tickets, details, reply, access
@@ -22,7 +23,7 @@ See [docs/tests.md](tests.md) for the full test documentation.
 
 ## Verification Status
 
-### Admin suite (`admin.spec.ts`) — 22 tests
+### Admin suite (`admin.spec.ts`) — 12 tests
 
 | Test                                                        | Status   | Notes                                                                  |
 | ----------------------------------------------------------- | -------- | ---------------------------------------------------------------------- |
@@ -38,6 +39,11 @@ See [docs/tests.md](tests.md) for the full test documentation.
 | faq: create, publish and trash a FAQ                        | Verified | Classic editor publish + trash                                         |
 | notice: create, publish and trash a notice                  | Verified | Classic editor publish + trash                                         |
 | debug log: page loads                                       | Verified |                                                                        |
+
+### Filters suite (`filters.spec.ts`) — 10 tests
+
+| Test                                                        | Status   | Notes                                                                  |
+| ----------------------------------------------------------- | -------- | ---------------------------------------------------------------------- |
 | tickets: search by keyword filters conversation list        | Verified | Search input updates the ticket table                                  |
 | tickets: customer filter by name narrows results            | Verified | Customer autocomplete filter                                           |
 | tickets: agent filter by name narrows results               | Verified | Agent autocomplete filter                                              |

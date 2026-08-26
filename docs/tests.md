@@ -21,6 +21,7 @@ npx playwright test
 
 # Per feature
 npx playwright test admin.spec.ts
+npx playwright test filters.spec.ts
 npx playwright test auth.spec.ts
 npx playwright test chat.spec.ts
 npx playwright test tickets.spec.ts
@@ -44,7 +45,8 @@ npx playwright test tickets.spec.ts --grep "reply to ticket"
 
 | File                              | Feature                                                                                     | Tests         |
 | --------------------------------- | ------------------------------------------------------------------------------------------- | ------------- |
-| `tests/admin.spec.ts`             | Admin: dashboard, profile, ticket ops, filters, pagination, bulk, taxonomies, FAQs, notices | 22            |
+| `tests/admin.spec.ts`             | Admin: dashboard, profile, ticket ops, taxonomies, FAQs, notices, debug log                | 12            |
+| `tests/filters.spec.ts`           | Admin tickets-tab filters: search, customer/agent/status/priority, per-page, bulk, pagination | 10            |
 | `tests/auth.spec.ts`              | Widget login / auth                                                                         | 7             |
 | `tests/chat.spec.ts`              | Chat widget, FAQ, notices, single-ticket chat, attachments                                  | 11            |
 | `tests/tickets.spec.ts`           | My tickets, details, reply, access                                                          | 6             |
@@ -65,21 +67,26 @@ npx playwright test tickets.spec.ts --grep "reply to ticket"
 | dashboard: bulk set status to Open from all tickets view    | @regression @admin        | On `tab=tickets&status=all`: checks a row `.ticket-checkbox`, applies `#bulk-action-select` "Set Status: Open" via `#apply-bulk-action`, body shows the updated notice                                  |
 | ticket: priority change persists on dashboard ticket view   | @regression @admin        | Changes `#ticket-priority-select` to a different value, reloads the ticket view, asserts it persisted, then restores the original                                                                       |
 | ticket: assignee change persists on dashboard ticket view   | @regression @admin        | Changes `#ticket-assignee-select` to a different agent (value = user ID), reloads, asserts persistence, restores                                                                                        |
-| departments: add and delete a category                      | @regression @admin        | `edit-tags.php?taxonomy=robodesk_ticket_category`: adds via `#tag-name` + `#submit`, expects "Item added." notice, deletes via `a.delete-tag` (accepts the JS confirm dialog), row removed              |
-| priorities: add and delete a category                       | @regression @admin        | Same flow on `taxonomy=robodesk_ticket_priority`                                                                                                                                                        |
+| departments: add and delete a category                      | @regression @admin        | `edit-tags.php?taxonomy=robdesk_ticket_category`: adds via `#tag-name` + `#submit`, expects "Item added." notice, deletes via `a.delete-tag` (accepts the JS confirm dialog), row removed              |
+| priorities: add and delete a category                       | @regression @admin        | Same flow on `taxonomy=robdesk_ticket_priority`                                                                                                                                                        |
 | faq: create, publish and trash a FAQ                        | @regression @admin        | Classic editor `post-new.php?post_type=robodesk_faq`: fills `#title`, clicks `#publish`, expects "Post published.", then moves the row to Trash via `a.submitdelete`                                    |
 | notice: create, publish and trash a notice                  | @regression @admin        | Same flow on `post_type=notice`                                                                                                                                                                         |
 | debug log: page loads                                       | @regression @admin        | `admin.php?page=robodesk-debug-log` renders for the admin session                                                                                                                                       |
-| tickets: search by keyword filters conversation list        | @regression               | Search input narrows and clears the ticket table                                                                                                                                                        |
-| tickets: customer filter by name narrows results            | @regression               | Customer autocomplete filter can be applied and cleared                                                                                                                                                 |
-| tickets: agent filter by name narrows results               | @regression               | Agent autocomplete filter can be applied and cleared                                                                                                                                                    |
-| tickets: status filter dropdown filters by status           | @regression               | Status dropdown accepts Open, Closed, and Active Conversations selections                                                                                                                               |
-| tickets: priority filter dropdown filters by priority       | @regression               | Priority dropdown accepts High and All selections                                                                                                                                                       |
-| tickets: per page dropdown changes page size                | @regression               | Changes the ticket table page size to 10, 20, and 50                                                                                                                                                    |
-| tickets: clear filters resets all filters                   | @regression               | Resets search, customer, agent, status, and priority controls                                                                                                                                           |
-| tickets: combined status and priority filters work together | @regression               | Status and priority selections coexist                                                                                                                                                                  |
-| tickets: pagination next/prev works                         | @regression               | Moves between ticket table pages and returns to the first page                                                                                                                                          |
-| tickets: bulk actions work with filters applied             | @regression               | Confirms a bulk status update and restores the selected ticket                                                                                                                                          |
+
+## Filters Tests (`tests/filters.spec.ts`)
+
+| Test                                                        | Tags      | What it verifies                                                                                                               |
+| ----------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| tickets: search by keyword filters conversation list        | @regression | Search input narrows and clears the ticket table                                                                              |
+| tickets: customer filter by name narrows results            | @regression | Customer autocomplete filter can be applied and cleared                                                                       |
+| tickets: agent filter by name narrows results               | @regression | Agent autocomplete filter can be applied and cleared                                                                          |
+| tickets: status filter dropdown filters by status           | @regression | Status dropdown accepts Open, Closed, and Active Conversations selections                                                     |
+| tickets: priority filter dropdown filters by priority       | @regression | Priority dropdown accepts High and All selections                                                                             |
+| tickets: per page dropdown changes page size                | @regression | Changes the ticket table page size to 10, 20, and 50                                                                          |
+| tickets: clear filters resets all filters                   | @regression | Resets search, customer, agent, status, and priority controls                                                                 |
+| tickets: combined status and priority filters work together | @regression | Status and priority selections coexist                                                                                        |
+| tickets: pagination next/prev works                         | @regression | Moves between ticket table pages and returns to the first page                                                                |
+| tickets: bulk actions work with filters applied             | @regression | Confirms a bulk status update and restores the selected ticket                                                                |
 
 ## Auth Tests (`tests/auth.spec.ts`)
 
