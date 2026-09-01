@@ -86,6 +86,32 @@ export class CredentialsVaultPage extends BasePage {
     await expect(this.credentialRow(name)).toHaveCount(0, { timeout: 15000 });
   }
 
+  async cancelDeleteCredential(name: string) {
+    const button = this.deleteCredentialButton(name);
+    await button.scrollIntoViewIfNeeded().catch(() => undefined);
+    this.page.once("dialog", (dialog) => dialog.dismiss());
+    await button.click({ force: true, noWaitAfter: true, timeout: 10000 });
+  }
+
+  async submitEmptyForm() {
+    await this.openAddCredentialForm();
+    await this.submitButton.scrollIntoViewIfNeeded().catch(() => undefined);
+    await this.submitButton.click({ noWaitAfter: true, timeout: 10000 });
+  }
+
+  async submitWithMissingFields(data: {
+    name?: string;
+    username?: string;
+    password?: string;
+  }) {
+    await this.openAddCredentialForm();
+    if (data.name) await this.nameInput.fill(data.name);
+    if (data.username) await this.usernameInput.fill(data.username);
+    if (data.password) await this.passwordInput.fill(data.password);
+    await this.submitButton.scrollIntoViewIfNeeded().catch(() => undefined);
+    await this.submitButton.click({ noWaitAfter: true, timeout: 10000 });
+  }
+
   async expectCredentialVisible(name: string) {
     await expect(this.credentialRow(name)).toBeVisible({ timeout: 15000 });
   }

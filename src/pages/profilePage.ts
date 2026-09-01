@@ -34,6 +34,18 @@ export class ProfilePage extends BasePage {
     return this.page.locator("#profile-submit");
   }
 
+  get passwordFeedback() {
+    return this.page.locator("#password-feedback");
+  }
+
+  get confirmPasswordFeedback() {
+    return this.page.locator("#confirm-password-feedback");
+  }
+
+  get passwordMatchFeedback() {
+    return this.page.locator("#password-match-feedback");
+  }
+
   async openProfile() {
     await this.page.goto("/wp-admin/profile.php");
     await this.waitForLoading();

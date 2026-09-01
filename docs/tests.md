@@ -29,6 +29,8 @@ npx playwright test create-ticket.spec.ts
 npx playwright test credentials-vault.spec.ts
 npx playwright test profile.spec.ts
 npx playwright test conversation.spec.ts
+npx playwright test notifications.spec.ts
+npx playwright test filters.spec.ts
 
 # By tag
 npx playwright test --grep "@smoke"
@@ -48,13 +50,21 @@ npx playwright test tickets.spec.ts --grep "reply to ticket"
 | `tests/admin.spec.ts`             | Admin: dashboard, profile, ticket ops, taxonomies, FAQs, notices, debug log                | 12            |
 | `tests/filters.spec.ts`           | Admin tickets-tab filters: search, customer/agent/status/priority, per-page, bulk, pagination | 10            |
 | `tests/auth.spec.ts`              | Widget login / auth                                                                         | 7             |
-| `tests/chat.spec.ts`              | Chat widget, FAQ, notices, single-ticket chat, attachments                                  | 11            |
-| `tests/tickets.spec.ts`           | My tickets, details, reply, access                                                          | 6             |
-| `tests/create-ticket.spec.ts`     | Create ticket (submit + validation)                                                         | 3 (1 skipped) |
-| `tests/credentials-vault.spec.ts` | Credentials vault CRUD                                                                      | 1             |
-| `tests/profile.spec.ts`           | Customer profile update                                                                     | 1             |
+| `tests/chat.spec.ts`              | Chat widget, FAQ, notices, single-ticket chat, attachments                                  | 15            |
+| `tests/tickets.spec.ts`           | My tickets, details, reply, access                                                          | 7             |
+| `tests/create-ticket.spec.ts`     | Create ticket (submit + validation)                                                         | 4 (1 skipped) |
+| `tests/credentials-vault.spec.ts` | Credentials vault CRUD                                                                      | 4             |
+| `tests/profile.spec.ts`           | Customer profile update                                                                     | 3             |
+| `tests/notifications.spec.ts`     | Notifications render + mark-all-read                                                         | 2             |
 | `tests/conversation.spec.ts`      | Two-way customer ↔ admin conversation                                                       | 1             |
-| **Total**                         |                                                                                             | **52**        |
+| **Total**                         |                                                                                             | **68**        |
+
+## Notification Tests (`tests/notifications.spec.ts`)
+
+| Test                                                                          | Tags                         | What it verifies                                                                                     |
+| ----------------------------------------------------------------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------- |
+| notifications: portal page renders notification area                          | @regression @customer        | `?robodesk_page=notifications` renders the mark-all-read button and/or notification items            |
+| notifications: admin reply generates a notification and mark-all-read clears it | @regression @admin @customer | Admin replies create an unread `.robodesk-notification-item.is-unread`; mark-all-read removes unread |
 
 ## Admin Tests (`tests/admin.spec.ts`)
 
@@ -115,6 +125,10 @@ npx playwright test tickets.spec.ts --grep "reply to ticket"
 | chat: ticket row opens single-ticket chat view and back returns to list | @regression @customer        | Clicking a `.single-rd-ticket` opens the chat view (`textarea[placeholder="Write a message..."]` + back button); back restores the conversation list                   |
 | chat: customer sends an image attachment in a ticket                    | @smoke @regression @customer | Sets `test-data/tiny.jpeg` on the hidden `input[type="file"]` (accept image/\*), preview container gains `.has-preview`, send adds an image to the sent messages       |
 | chat: search handles special characters without crashing                | @regression @customer        | Terms `.*`, `[abc`, `a+b*c?`, and whitespace show the no-match message without crashing; clearing restores the full list                                               |
+| chat: session persists across page reload (no re-login)                  | @regression @customer        | Reload keeps the logged-in chat view without requiring a fresh login                                                                                                  |
+| chat: empty reply does not send a message                                | @regression @customer        | Whitespace in the home-chat input leaves the send button disabled; no message is sent                                                                                 |
+| chat: uploading an invalid file type is rejected                          | @regression @customer        | A non-image upload is rejected with an error message                                                                                                                  |
+| chat: uploading an oversized file is rejected                             | @regression @customer        | A file larger than the limit is rejected with an error message                                                                                                        |
 
 ## Tickets Tests (`tests/tickets.spec.ts`)
 
@@ -130,7 +144,8 @@ npx playwright test tickets.spec.ts --grep "reply to ticket"
 | ------------------------------------------------------------------ | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | portal: my tickets page lists tickets and filters work             | @smoke @regression @customer | `?robodesk_page=my-tickets` renders filters (priority, status, order) and the ticket table; status filter applies                                                                                                                                                   |
 | portal: customer can open ticket details from my tickets           | @regression @customer        | Clicking a ticket link opens the frontend detail view (`/robodesk-support/?robodesk_page=my-tickets&tid=N`)                                                                                                                                                         |
-| portal: customer can reply to ticket from details page             | @regression @customer        | Types into the reply editor (`iframe#comment_ifr`), submits via "Add Reply", and asserts the reply renders                                                                                                                                                          |
+| portal: customer can reply to ticket from details page             | @regression @customer        | Types into the reply editor (`iframe#comment_ifr`), submits via "Add Reply", and asserts the reply renders (known-flaky: intermittently dropped by WP comment flood control) |
+| portal: ticket details show conversation id, status and priority metadata | @regression @customer        | Conversation ID, status, and priority read-only metadata cards render on the ticket detail view                                                                                                                                     |
 | portal: customer cannot view another user's ticket via direct link | @regression @customer        | Self-contained: the admin creates a ticket (via `conversationTest` fixture), its id is read from the dashboard "Active Conversations" view, and the customer opening `tid=` that ticket sees "You do not have permission to view this ticket." with no comment form |
 | portal: non-existent ticket id falls back safely to list           | @regression @customer        | `tid=999999` renders the ticket list instead of crashing or leaking data                                                                                                                                                                                            |
 
@@ -141,18 +156,24 @@ npx playwright test tickets.spec.ts --grep "reply to ticket"
 | tickets: create ticket form is available                           | @smoke @regression @customer | SKIPPED - live UI does not render the form on `/submit-ticket/` (documented TODO)                                              |
 | portal: create ticket form renders and submits a ticket            | @regression @customer        | `?robodesk_page=create-ticket` shows title, TinyMCE description editor, and priority select; submits a new ticket successfully |
 | portal: create ticket blocks empty title without creating a ticket | @regression @customer        | Empty title submit is blocked by native validation: no POST, no success message, form stays open                               |
+| portal: create ticket accepts special characters in the title      | @regression @customer        | Titles containing quotes and special characters are accepted                                                                    |
 
 ## Credentials Vault Tests (`tests/credentials-vault.spec.ts`)
 
 | Test                                                    | Tags                         | What it verifies                                                                                                                         |
 | ------------------------------------------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
 | portal: credentials vault shows and stores a credential | @smoke @regression @customer | `?robodesk_page=credentials-vault` lists credentials; adding a credential persists it to the table; deletion (confirm dialog) removes it |
+| vault: cancelling delete keeps the credential           | @regression @customer        | Dismissing the delete `confirm()` dialog keeps the credential in the table                                                               |
+| vault: empty required fields block submission           | @regression @customer        | Submitting an empty form (name, username, password required) is blocked; no credential is added                                           |
+| vault: missing password field blocks submission         | @regression @customer        | Submitting with name+username but no password is blocked; no credential is added                                                         |
 
 ## Profile Tests (`tests/profile.spec.ts`)
 
 | Test                                           | Tags                  | What it verifies                                                                                                                                                          |
 | ---------------------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | portal: customer can update profile first name | @regression @customer | `?robodesk_page=profile` renders the form; updating the first name shows "Profile updated successfully!" and persists across reload; original value is restored afterward |
+| profile: password mismatch is flagged and submit is blocked | @regression @customer | Mismatched password/confirm (typed via `pressSequentially` to fire `keyup`) shows feedback and blocks submission |
+| profile: weak password lists missing requirements | @regression @customer | A weak new password lists the missing requirements via feedback |
 
 ## Conversation Tests (`tests/conversation.spec.ts`)
 
@@ -204,4 +225,5 @@ src/
 - **Admin reply/status**: performed from the Robodesk dashboard ticket view (not the wp-admin post editor), using `#new-reply`, `#send-reply-btn`, and `#ticket-status-select`.
 - **Vault delete**: deletion triggers a native `confirm()` dialog which the page object accepts.
 - **Skipped test**: the `/submit-ticket/` form scenario stays skipped until the live UI renders the expected form. Note that `/submit-ticket/` does not render the ticket form on this site for any role — the supported path is the portal `?robodesk_page=create-ticket` page.
+- **Known-flaky portal reply test**: `portal: customer can reply to ticket from details page` uses the embedded WordPress comment form (`#comment_ifr` + `#submit`). Running many such replies in quick succession can trigger WordPress comment flood control, intermittently dropping the reply. Treat it as known-flaky; the rest of the tickets suite is stable.
 - **Rate-limit resets**: the limiter stores per-IP counters in `wp_options` transients (`robodesk_email_check_rate_*`, 1-hour TTL). During development the counters can be cleared directly from the Local site's MySQL socket: `delete from wp_options where option_name like '%robodesk_email_check_rate_%'`. Avoid re-running the auth suite more than twice per hour (4 email checks per run).

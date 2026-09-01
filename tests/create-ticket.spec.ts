@@ -51,4 +51,25 @@ test.describe("Robodesk create ticket", () => {
       expect(posts).toBe(0);
     },
   );
+
+  portalTest(
+    "portal: create ticket accepts special characters in the title @regression @customer",
+    async ({ page }) => {
+      const create = new CreateTicketPage(page);
+      await create.openCreateTicket();
+      await create.expectFormVisible();
+      const title = `QA Special <>&'"${Date.now()}`;
+      await create.titleInput.fill(title);
+      await create.fillDescription("Special character ticket description");
+      await create.submitButton.scrollIntoViewIfNeeded();
+      await Promise.all([
+        page.waitForLoadState("networkidle"),
+        create.submitButton.click(),
+      ]);
+      await expect(page.locator("body")).toContainText(
+        /ticket.*created|ticket.*submitted|success|thanks/i,
+        { timeout: 15000 },
+      );
+    },
+  );
 });

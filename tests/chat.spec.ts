@@ -1,6 +1,7 @@
 import { test, expect, widgetTest } from "../src/fixtures/roles";
 import { ChatWidgetPage } from "../src/pages/chatWidgetPage";
 import { join } from "path";
+import { writeFileSync, unlinkSync } from "fs";
 
 test.describe("Robodesk chat widget", () => {
   test("chat: home page renders chat widget container @regression @chat", async ({
@@ -240,6 +241,100 @@ test.describe("Robodesk chat widget", () => {
       await expect
         .poll(async () => chatWidget.ticketRows.count(), { timeout: 10000 })
         .toBe(total);
+    },
+  );
+
+  widgetTest(
+    "chat: session persists across page reload (no re-login) @regression @customer",
+    async ({ page }) => {
+      const chatWidget = new ChatWidgetPage(page);
+      await chatWidget.openHome();
+      await chatWidget.openWidget();
+      await chatWidget.openConversationsTab();
+      await expect(chatWidget.ticketRows.first()).toBeVisible({
+        timeout: 15000,
+      });
+      await chatWidget.expectLoggedInView();
+
+      await page.reload({ waitUntil: "networkidle" });
+      await chatWidget.openWidget();
+      await chatWidget.openConversationsTab();
+      await expect(chatWidget.ticketRows.first()).toBeVisible({
+        timeout: 15000,
+      });
+      await expect(page.locator(".login-card")).toHaveCount(0);
+      await expect(chatWidget.conversationsView).toBeVisible({
+        timeout: 15000,
+      });
+    },
+  );
+
+  widgetTest(
+    "chat: empty reply does not send a message @regression @customer",
+    async ({ page }) => {
+      const chatWidget = new ChatWidgetPage(page);
+      await chatWidget.openHome();
+      await chatWidget.openWidget();
+      await expect(chatWidget.chatInput).toBeVisible({ timeout: 10000 });
+
+      await chatWidget.chatInput.fill("   ");
+      await expect(chatWidget.chatSendButton).toBeDisabled({ timeout: 5000 });
+      await chatWidget.chatSendButton.click({ force: true }).catch(
+        () => undefined,
+      );
+      await page.waitForTimeout(800);
+      await expect(chatWidget.chatInput).toHaveValue("   ");
+    },
+  );
+
+  widgetTest(
+    "chat: uploading an invalid file type is rejected @regression @customer",
+    async ({ page }) => {
+      const chatWidget = new ChatWidgetPage(page);
+      await chatWidget.openHome();
+      await chatWidget.openWidget();
+      await chatWidget.openConversationsTab();
+      await chatWidget.openFirstTicket();
+
+      const filePath = join(process.cwd(), "test-data", "invalid.txt");
+      writeFileSync(filePath, "not an image");
+      const dialogMessage = new Promise<string>((resolve) => {
+        page.once("dialog", (dialog) => {
+          resolve(dialog.message());
+          dialog.accept();
+        });
+      });
+
+      await chatWidget.fileInput.setInputFiles(filePath);
+      const message = await dialogMessage;
+      expect(message).toMatch(/JPEG, PNG, or GIF/i);
+      unlinkSync(filePath);
+    },
+  );
+
+  widgetTest(
+    "chat: uploading an oversized file is rejected @regression @customer",
+    async ({ page }) => {
+      const chatWidget = new ChatWidgetPage(page);
+      await chatWidget.openHome();
+      await chatWidget.openWidget();
+      await chatWidget.openConversationsTab();
+      await chatWidget.openFirstTicket();
+
+      const filePath = join(process.cwd(), "test-data", "oversize.png");
+      const buffer = Buffer.alloc(4 * 1024 * 1024, 0);
+      writeFileSync(filePath, buffer);
+      const dialogMessage = new Promise<string>((resolve) => {
+        page.once("dialog", (dialog) => {
+          resolve(dialog.message());
+          dialog.accept();
+        });
+      });
+
+      await chatWidget.fileInput.setInputFiles(filePath);
+      const message = await dialogMessage;
+      expect(message).toMatch(/less than 3MB/i);
+      unlinkSync(filePath);
     },
   );
 });

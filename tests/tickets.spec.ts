@@ -58,6 +58,31 @@ test.describe("Robodesk tickets", () => {
       },
     );
 
+    portalTest(
+      "portal: ticket details show conversation id, status and priority metadata @regression @customer",
+      async ({ page }) => {
+        const myTickets = new MyTicketsPage(page);
+        await myTickets.openMyTickets();
+        await myTickets.ticketLinks.first().click();
+        const details = new TicketDetailsPage(page);
+        await details.expectLoaded();
+        await expect(page).toHaveURL(
+          /robodesk-support\/\?robodesk_page=my-tickets&tid=\d+/,
+        );
+        const conversationCard = page.locator(
+          ".robodesk-ticket-meta-conversation",
+        );
+        await expect(conversationCard).toBeVisible({ timeout: 15000 });
+        await expect(conversationCard).toContainText(/conversation id/i);
+        await expect(
+          page.locator(".robodesk-ticket-meta-status"),
+        ).toBeVisible();
+        await expect(
+          page.locator(".robodesk-ticket-meta-priority"),
+        ).toBeVisible();
+      },
+    );
+
     conversationTest(
       "portal: customer cannot view another user's ticket via direct link @regression @customer",
       async ({ customerPage, adminPage }) => {
