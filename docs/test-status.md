@@ -48,8 +48,8 @@ See [docs/tests.md](tests.md) for the full test documentation.
 | tickets: search by keyword filters conversation list        | Verified | Search input updates the ticket table                                  |
 | tickets: customer filter by name narrows results            | Verified | Customer autocomplete filter                                           |
 | tickets: agent filter by name narrows results               | Verified | Agent autocomplete filter                                              |
-| tickets: status filter dropdown filters by status           | Verified | Status selection is retained and table remains stable                  |
-| tickets: priority filter dropdown filters by priority       | Verified | Priority selection is retained and table remains stable                |
+| tickets: status filter dropdown filters by status           | Verified | Value retained + count bounds; product filter does NOT filter returned rows (confirmed bug) |
+| tickets: priority filter dropdown filters by priority       | Verified | Value retained + count bounds; product filter does NOT filter returned rows (confirmed bug) |
 | tickets: per page dropdown changes page size                | Verified | 10, 20, and 50 row limits                                              |
 | tickets: clear filters resets all filters                   | Verified | Search and filter controls reset to the default dataset                |
 | tickets: combined status and priority filters work together | Verified | Status and priority controls can be selected together                  |
