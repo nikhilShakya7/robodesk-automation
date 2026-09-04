@@ -7,9 +7,9 @@ import {
   changeStatus,
   createTicket,
   waitForToast,
-} from "../src/helpers/robodeskHelpers";
+} from "../src/helpers/mmhdHelpers";
 
-test.describe("Robodesk admin suite", () => {
+test.describe("Metamint Helpdesk admin suite", () => {
   test.setTimeout(180_000);
   adminTest(
     "auth: admin can view dashboard @smoke @regression @admin",
@@ -41,7 +41,7 @@ test.describe("Robodesk admin suite", () => {
     async ({ page }) => {
       const reply = createReplyData();
       await page.goto(
-        "/wp-admin/admin.php?page=robodesk-dashboard&tab=dashboard",
+        "/wp-admin/admin.php?page=mmhd-dashboard&tab=dashboard",
       );
       await page.locator("tr[data-ticketid]").first().click();
       await expect(page).toHaveURL(/ticket=\d+/);
@@ -54,7 +54,7 @@ test.describe("Robodesk admin suite", () => {
     "dashboard: bulk set status to Open from all tickets view @regression @admin",
     async ({ page }) => {
       await page.goto(
-        "/wp-admin/admin.php?page=robodesk-dashboard&tab=tickets&status=all",
+        "/wp-admin/admin.php?page=mmhd-dashboard&tab=tickets&status=all",
       );
       const checkbox = page.locator("tr.table-row .ticket-checkbox").first();
       await expect(checkbox).toBeVisible();
@@ -72,7 +72,7 @@ test.describe("Robodesk admin suite", () => {
     "ticket: priority change persists on dashboard ticket view @regression @admin",
     async ({ page }) => {
       await page.goto(
-        "/wp-admin/admin.php?page=robodesk-dashboard&tab=dashboard",
+        "/wp-admin/admin.php?page=mmhd-dashboard&tab=dashboard",
       );
       await page.locator("tr[data-ticketid]").first().click();
       await expect(page).toHaveURL(/ticket=\d+/);
@@ -99,7 +99,7 @@ test.describe("Robodesk admin suite", () => {
     "ticket: assignee change persists on dashboard ticket view @regression @admin",
     async ({ page }) => {
       await page.goto(
-        "/wp-admin/admin.php?page=robodesk-dashboard&tab=dashboard",
+        "/wp-admin/admin.php?page=mmhd-dashboard&tab=dashboard",
       );
       await page.locator("tr[data-ticketid]").first().click();
       await expect(page).toHaveURL(/ticket=\d+/);
@@ -127,7 +127,7 @@ test.describe("Robodesk admin suite", () => {
     async ({ page }) => {
       const name = `QA Dept ${Date.now()}`;
       await page.goto(
-        "/wp-admin/edit-tags.php?taxonomy=robodesk_ticket_category&post_type=robodesk_ticket",
+        "/wp-admin/edit-tags.php?taxonomy=mmhd_ticket_category&post_type=mmhd_ticket",
       );
       await page.locator("#tag-name").fill(name);
       await page.locator("#submit").click();
@@ -149,7 +149,7 @@ test.describe("Robodesk admin suite", () => {
     async ({ page }) => {
       const name = `QA Priority ${Date.now()}`;
       await page.goto(
-        "/wp-admin/edit-tags.php?taxonomy=robodesk_ticket_priority&post_type=robodesk_ticket",
+        "/wp-admin/edit-tags.php?taxonomy=mmhd_ticket_priority&post_type=mmhd_ticket",
       );
       await page.locator("#tag-name").fill(name);
       await page.locator("#submit").click();
@@ -170,13 +170,13 @@ test.describe("Robodesk admin suite", () => {
     "faq: create, publish and trash a FAQ @regression @admin",
     async ({ page }) => {
       const title = `QA FAQ ${Date.now()}`;
-      await page.goto("/wp-admin/post-new.php?post_type=robodesk_faq");
+      await page.goto("/wp-admin/post-new.php?post_type=mmhd_faq");
       await page.locator("#title").fill(title);
       await page.locator("#publish").click();
       await expect(page.locator("#message")).toContainText(/published/i, {
         timeout: 15000,
       });
-      await page.goto("/wp-admin/edit.php?post_type=robodesk_faq");
+      await page.goto("/wp-admin/edit.php?post_type=mmhd_faq");
       const row = page.locator("#the-list tr").filter({ hasText: title });
       await expect(row).toHaveCount(1);
       await row.hover();
@@ -207,7 +207,7 @@ test.describe("Robodesk admin suite", () => {
     },
   );
   adminTest("debug log: page loads @regression @admin", async ({ page }) => {
-    await page.goto("/wp-admin/admin.php?page=robodesk-debug-log");
+    await page.goto("/wp-admin/admin.php?page=mmhd-debug-log");
     await expect(page.locator("body")).toBeVisible();
   });
 

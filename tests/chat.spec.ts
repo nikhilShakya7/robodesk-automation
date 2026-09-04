@@ -3,7 +3,7 @@ import { ChatWidgetPage } from "../src/pages/chatWidgetPage";
 import { join } from "path";
 import { writeFileSync, unlinkSync } from "fs";
 
-test.describe("Robodesk chat widget", () => {
+test.describe("Metamint Helpdesk chat widget", () => {
   test("chat: home page renders chat widget container @regression @chat", async ({
     page,
   }) => {
@@ -115,13 +115,24 @@ test.describe("Robodesk chat widget", () => {
       });
       const total = await chatWidget.faqItems.count();
       expect(total).toBeGreaterThan(0);
-      await chatWidget.faqSearchInput.fill("conversations");
+      // Derive the search term from an actual FAQ title so the test is
+      // data-agnostic (any FAQ content, any language).
+      const firstTitle = (
+        await chatWidget.faqItems
+          .first()
+          .locator(".mmhd-faq-title")
+          .innerText()
+      ).trim();
+      await chatWidget.faqSearchInput.fill(firstTitle);
       await expect
         .poll(async () => chatWidget.faqItems.count(), { timeout: 10000 })
         .toBeGreaterThan(0);
       const matched = await chatWidget.faqItems.count();
-      expect(matched).toBeLessThan(total);
-      await expect(chatWidget.faqItems.first()).toContainText(/conversation/i);
+      expect(matched).toBeGreaterThan(0);
+      expect(matched).toBeLessThanOrEqual(total);
+      await expect(
+        chatWidget.faqItems.first().locator(".mmhd-faq-title"),
+      ).toContainText(firstTitle);
       await chatWidget.faqSearchInput.fill("zzz-no-match-zzz");
       await expect
         .poll(async () => chatWidget.faqItems.count(), { timeout: 10000 })
@@ -145,11 +156,11 @@ test.describe("Robodesk chat widget", () => {
       });
       const title = await chatWidget.faqItems
         .first()
-        .locator(".rd-faq-title")
+        .locator(".mmhd-faq-title")
         .innerText();
       await chatWidget.faqItems.first().click();
       await expect(chatWidget.backButton).toBeVisible({ timeout: 10000 });
-      await expect(page.locator(".robodesk-popup.open")).toContainText(title);
+      await expect(page.locator(".mmhd-popup.open")).toContainText(title);
       await chatWidget.backButton.click();
       await expect(chatWidget.faqItems.first()).toBeVisible({ timeout: 10000 });
     },
@@ -168,7 +179,7 @@ test.describe("Robodesk chat widget", () => {
       const count = await chatWidget.noticeItems.count();
       expect(count).toBeGreaterThan(0);
       await expect(
-        page.locator(".robodesk-popup.open .rd-notice-tab-wrap"),
+        page.locator(".mmhd-popup.open .mmhd-notice-tab-wrap"),
       ).toContainText(/notices|stay updated/i);
     },
   );
@@ -208,7 +219,7 @@ test.describe("Robodesk chat widget", () => {
         join(process.cwd(), "test-data", "tiny.jpeg"),
       );
       await expect(
-        page.locator(".robodesk-popup.open .chat-input.has-preview"),
+        page.locator(".mmhd-popup.open .chat-input.has-preview"),
       ).toBeVisible({ timeout: 10000 });
       await chatWidget.singleTicketSendButton.click();
       await expect

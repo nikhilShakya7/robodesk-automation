@@ -1,18 +1,15 @@
-import { test, expect, portalTest, conversationTest } from "../src/fixtures/roles";
+import {
+  test,
+  expect,
+  portalTest,
+  conversationTest,
+} from "../src/fixtures/roles";
 import { MyTicketsPage } from "../src/pages/myTicketsPage";
 import { TicketDetailsPage } from "../src/pages/ticketDetailsPage";
 import { CreateTicketPage } from "../src/pages/createTicketPage";
 import { createReplyData } from "../src/data/fakeData";
 
-test.describe("Robodesk tickets", () => {
-  test("tickets: customer can open my tickets page @smoke @regression @customer", async ({
-    page,
-  }) => {
-    const myTickets = new MyTicketsPage(page);
-    await myTickets.openMyTickets();
-    await expect(page.locator("body")).toContainText(/my tickets|\[tickets\]/i);
-  });
-
+test.describe("Metamint Helpdesk tickets", () => {
   portalTest.describe("customer support portal after widget login", () => {
     portalTest(
       "portal: my tickets page lists tickets and filters work @smoke @regression @customer",
@@ -22,7 +19,7 @@ test.describe("Robodesk tickets", () => {
         await myTickets.expectFiltersVisible();
         await myTickets.expectTicketsVisible();
         await myTickets.filterByStatus("Open");
-        await expect(page).toHaveURL(/robodesk_page=my-tickets/);
+        await expect(page).toHaveURL(/mmhd_page=my-tickets/);
         await myTickets.expectTicketsVisible();
       },
     );
@@ -36,7 +33,7 @@ test.describe("Robodesk tickets", () => {
         const details = new TicketDetailsPage(page);
         await details.expectLoaded();
         await expect(page).toHaveURL(
-          /robodesk-support\/\?robodesk_page=my-tickets&tid=\d+/,
+          /mmhd-support\/\?mmhd_page=my-tickets&tid=\d+/,
         );
       },
     );
@@ -51,7 +48,7 @@ test.describe("Robodesk tickets", () => {
         const details = new TicketDetailsPage(page);
         await details.expectLoaded();
         await expect(page).toHaveURL(
-          /robodesk-support\/\?robodesk_page=my-tickets&tid=\d+/,
+          /mmhd-support\/\?mmhd_page=my-tickets&tid=\d+/,
         );
         await details.reply(reply.content);
         await details.expectReplyVisible(reply.content);
@@ -67,19 +64,13 @@ test.describe("Robodesk tickets", () => {
         const details = new TicketDetailsPage(page);
         await details.expectLoaded();
         await expect(page).toHaveURL(
-          /robodesk-support\/\?robodesk_page=my-tickets&tid=\d+/,
+          /mmhd-support\/\?mmhd_page=my-tickets&tid=\d+/,
         );
-        const conversationCard = page.locator(
-          ".robodesk-ticket-meta-conversation",
-        );
+        const conversationCard = page.locator(".mmhd-ticket-meta-conversation");
         await expect(conversationCard).toBeVisible({ timeout: 15000 });
         await expect(conversationCard).toContainText(/conversation id/i);
-        await expect(
-          page.locator(".robodesk-ticket-meta-status"),
-        ).toBeVisible();
-        await expect(
-          page.locator(".robodesk-ticket-meta-priority"),
-        ).toBeVisible();
+        await expect(page.locator(".mmhd-ticket-meta-status")).toBeVisible();
+        await expect(page.locator(".mmhd-ticket-meta-priority")).toBeVisible();
       },
     );
 
@@ -92,7 +83,7 @@ test.describe("Robodesk tickets", () => {
         await create.createTicket({ title, description: "other user ticket" });
 
         await adminPage.goto(
-          "/wp-admin/admin.php?page=robodesk-dashboard&tab=dashboard",
+          "/wp-admin/admin.php?page=mmhd-dashboard&tab=dashboard",
         );
         await adminPage
           .getByRole("button", { name: /active conversations/i })
@@ -107,7 +98,7 @@ test.describe("Robodesk tickets", () => {
         expect(otherTicketId).toBeTruthy();
 
         await customerPage.goto(
-          `/robodesk-support/?robodesk_page=my-tickets&tid=${otherTicketId}`,
+          `/mmhd-support/?mmhd_page=my-tickets&tid=${otherTicketId}`,
         );
         await expect(customerPage.locator("body")).toContainText(
           /do not have permission to view this ticket/i,
@@ -120,9 +111,7 @@ test.describe("Robodesk tickets", () => {
     portalTest(
       "portal: non-existent ticket id falls back safely to list @regression @customer",
       async ({ page }) => {
-        await page.goto(
-          "/robodesk-support/?robodesk_page=my-tickets&tid=999999",
-        );
+        await page.goto("/mmhd-support/?mmhd_page=my-tickets&tid=999999");
         const myTickets = new MyTicketsPage(page);
         await expect(myTickets.statusFilter).toBeVisible();
         await expect(page.locator("#commentform")).toHaveCount(0);

@@ -5,13 +5,13 @@ async function resetTicketFilters(page: Page) {
   await page
     .locator('input[name="search"][placeholder="Search tickets..."]')
     .fill("");
-  await page.locator("#robodesk-customer-filter-input").fill("");
-  await page.locator("#robodesk-agent-filter-input").fill("");
+  await page.locator("#mmhd-customer-filter-input").fill("");
+  await page.locator("#mmhd-agent-filter-input").fill("");
   await page
     .locator('select[name="status"]')
     .selectOption({ label: "Active Conversations" });
   await page
-    .locator("#robodesk-priority-filter")
+    .locator("#mmhd-priority-filter")
     .selectOption({ label: "Priority (All)" });
   await page.locator('button:has-text("Filter")').click({ noWaitAfter: true });
   await page.waitForLoadState("networkidle");
@@ -22,21 +22,21 @@ test.describe("Tickets tab filters @admin", () => {
 
   adminTest.beforeEach(async ({ page }) => {
     await page.goto(
-      "/wp-admin/admin.php?page=robodesk-dashboard&tab=tickets&view=tickets",
+      "/wp-admin/admin.php?page=mmhd-dashboard&tab=tickets&view=tickets",
     );
     await page.waitForLoadState("networkidle");
     await page.waitForTimeout(3000);
     await page
-      .locator("#robodesk-customer-filter-input")
+      .locator("#mmhd-customer-filter-input")
       .waitFor({ state: "visible", timeout: 15000 });
     await page
-      .locator("#robodesk-agent-filter-input")
+      .locator("#mmhd-agent-filter-input")
       .waitFor({ state: "visible", timeout: 15000 });
     await page
       .locator('select[name="status"]')
       .waitFor({ state: "visible", timeout: 15000 });
     await page
-      .locator("#robodesk-priority-filter")
+      .locator("#mmhd-priority-filter")
       .waitFor({ state: "visible", timeout: 15000 });
   });
 
@@ -76,7 +76,7 @@ test.describe("Tickets tab filters @admin", () => {
   adminTest(
     "tickets: customer filter by name narrows results @regression",
     async ({ page }) => {
-      const customerFilter = page.locator("#robodesk-customer-filter-input");
+      const customerFilter = page.locator("#mmhd-customer-filter-input");
       await expect(customerFilter).toBeVisible();
 
       const baselineRows = await page.locator("tr.table-row").count();
@@ -101,7 +101,7 @@ test.describe("Tickets tab filters @admin", () => {
   adminTest(
     "tickets: agent filter by name narrows results @regression",
     async ({ page }) => {
-      const agentFilter = page.locator("#robodesk-agent-filter-input");
+      const agentFilter = page.locator("#mmhd-agent-filter-input");
       await expect(agentFilter).toBeVisible();
 
       const initialRows = await page.locator("tr.table-row").count();
@@ -156,7 +156,7 @@ test.describe("Tickets tab filters @admin", () => {
   adminTest(
     "tickets: priority filter dropdown filters by priority @regression",
     async ({ page }) => {
-      const priorityFilter = page.locator("#robodesk-priority-filter");
+      const priorityFilter = page.locator("#mmhd-priority-filter");
       await expect(priorityFilter).toBeVisible();
 
       const initialRows = await page.locator("tr.table-row").count();
@@ -215,7 +215,7 @@ test.describe("Tickets tab filters @admin", () => {
       const searchInput = page.locator(
         'input[name="search"][placeholder="Search tickets..."]',
       );
-      const customerFilter = page.locator("#robodesk-customer-filter-input");
+      const customerFilter = page.locator("#mmhd-customer-filter-input");
       const statusFilter = page.locator('select[name="status"]');
 
       await searchInput.fill("test");
@@ -243,7 +243,7 @@ test.describe("Tickets tab filters @admin", () => {
     "tickets: combined status and priority filters work together @regression",
     async ({ page }) => {
       const statusFilter = page.locator('select[name="status"]');
-      const priorityFilter = page.locator("#robodesk-priority-filter");
+      const priorityFilter = page.locator("#mmhd-priority-filter");
 
       const initialRows = await page.locator("tr.table-row").count();
       expect(initialRows).toBeGreaterThanOrEqual(0);

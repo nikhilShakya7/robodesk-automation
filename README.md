@@ -1,12 +1,12 @@
-# Robodesk Local Test
+# Metamint Helpdesk Local Test
 
-End-to-end Playwright test suite for the Robodesk customer support plugin, running against a local WordPress installation (`http://robodesk1.local`).
+End-to-end Playwright test suite for the Metamint Helpdesk customer support plugin, running against a local WordPress installation (`http://metamint.local`).
 
 ## Prerequisites
 
 - Node.js 20.12+ (uses `process.loadEnvFile`; tested on v24)
 - Playwright browsers installed: `npx playwright install chromium`
-- A running Robodesk WordPress site reachable at the configured `BASE_URL`
+- A running Metamint Helpdesk WordPress site reachable at the configured `BASE_URL`
 
 ## Setup
 
@@ -77,7 +77,7 @@ Reports: HTML report in `playwright-report/` (`npx playwright show-report`), plu
 │   │   ├── basePage.ts             # goto, waitForLoading, waitForToast
 │   │   ├── loginPage.ts            # wp-login flow
 │   │   ├── dashboardPage.ts        # admin dashboard
-│   │   ├── customerPortalPage.ts   # /robodesk-support/ guest view
+│   │   ├── customerPortalPage.ts   # /mmhd-support/ guest view
 │   │   ├── myTicketsPage.ts        # my-tickets list + filters
 │   │   ├── createTicketPage.ts     # create-ticket form (TinyMCE-aware)
 │   │   ├── credentialsVaultPage.ts # credentials vault CRUD
@@ -85,7 +85,7 @@ Reports: HTML report in `playwright-report/` (`npx playwright show-report`), plu
 │   │   ├── chatWidgetPage.ts       # widget open/login/chat/search/filter
 │   │   ├── profilePage.ts          # wp-admin + portal profile forms
 │   │   └── notificationsPage.ts
-│   ├── helpers/robodeskHelpers.ts  # login, createTicket, reply, toast, etc.
+│   ├── helpers/mmhdHelpers.ts  # login, createTicket, reply, toast, etc.
 │   ├── fixtures/roles.ts           # role fixtures + portalTest (session reuse)
 │   └── data/fakeData.ts            # deterministic random test data
 ├── docs/
@@ -97,13 +97,13 @@ Reports: HTML report in `playwright-report/` (`npx playwright show-report`), plu
 
 ## Key behaviors
 
-- **Widget login for existing users**: the chat widget checks the email first (`wp-admin/admin-ajax.php?action=robodesk_check_email`); if the user exists, a password field appears (button changes from Continue to Login). New users are auto-registered and have no password step.
+- **Widget login for existing users**: the chat widget checks the email first (`wp-admin/admin-ajax.php?action=mmhd_check_email`); if the user exists, a password field appears (button changes from Continue to Login). New users are auto-registered and have no password step.
 - **Portal session reuse**: `portalTest` logs the customer in once per worker through the widget and caches the session to `.state/customer-widget-storage.json`, so the portal tests don't repeatedly hit the server-side login rate limiter. Delete that file to force a fresh login.
 - **Admin session reuse**: `adminTest` logs the admin in once per worker via `/wp-login.php` and caches the session to `.state/admin-wp-storage.json`; every admin feature test (including the dashboard smoke test) runs from that single cached session. Delete that file to force a fresh login.
 - **Two-context conversation test**: `conversationTest` in `src/fixtures/roles.ts` provides `customerPage` (cached widget session) and `adminPage` (cached admin session) in the same test, so a single test can drive both sides of a conversation.
-- **Server-side rate limiting**: the email-check endpoint allows **10 checks per IP per hour** and returns "Too many attempts. Please try again later." beyond that. All local requests share one IP, so the whole suite shares the budget. If tests hit this, wait for the hourly transient to expire. The actual password login (`/wp-json/robodesk/v1/login`) is not rate limited.
+- **Server-side rate limiting**: the email-check endpoint allows **10 checks per IP per hour** and returns "Too many attempts. Please try again later." beyond that. All local requests share one IP, so the whole suite shares the budget. If tests hit this, wait for the hourly transient to expire. The actual password login (`/wp-json/mmhd/v1/login`) is not rate limited.
 - **TinyMCE**: the create-ticket description is a hidden `textarea#ticket_content`; tests type into `iframe#ticket_content_ifr`. The customer reply editor on ticket details is `iframe#comment_ifr`.
-- **Admin reply/status**: done from the Robodesk dashboard ticket view (`admin.php?page=robodesk-dashboard&tab=dashboard&ticket=N`), replying via the `#new-reply` editor and `#send-reply-btn`, changing status via `#ticket-status-select`.
+- **Admin reply/status**: done from the Metamint Helpdesk dashboard ticket view (`admin.php?page=mmhd-dashboard&tab=dashboard&ticket=N`), replying via the `#new-reply` editor and `#send-reply-btn`, changing status via `#ticket-status-select`.
 - **Vault delete**: deletion uses a native `confirm()` dialog, which the page object accepts.
 
 ## Screenshots

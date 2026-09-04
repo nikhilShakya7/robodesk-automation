@@ -1,9 +1,9 @@
 import { conversationTest, expect } from "../src/fixtures/roles";
 import { ChatWidgetPage } from "../src/pages/chatWidgetPage";
 import { CreateTicketPage } from "../src/pages/createTicketPage";
-import { replyToTicket } from "../src/helpers/robodeskHelpers";
+import { replyToTicket } from "../src/helpers/mmhdHelpers";
 
-conversationTest.describe("Robodesk two-way conversation", () => {
+conversationTest.describe("Metamint Helpdesk two-way conversation", () => {
   conversationTest.setTimeout(180_000);
 
   conversationTest(
@@ -23,7 +23,7 @@ conversationTest.describe("Robodesk two-way conversation", () => {
 
       // Admin: find the ticket in the dashboard and open it in the backend
       await adminPage.goto(
-        "/wp-admin/admin.php?page=robodesk-dashboard&tab=dashboard",
+        "/wp-admin/admin.php?page=mmhd-dashboard&tab=dashboard",
       );
       await adminPage
         .getByRole("button", { name: /active conversations/i })
@@ -50,7 +50,7 @@ conversationTest.describe("Robodesk two-way conversation", () => {
       await chatWidget.openConversationsTab();
       await chatWidget.searchTickets(title);
       await chatWidget.openFirstTicket();
-      await expect(customerPage.locator(".robodesk-popup.open")).toContainText(
+      await expect(customerPage.locator(".mmhd-popup.open")).toContainText(
         adminReply,
         { timeout: 15000 },
       );

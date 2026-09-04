@@ -7,11 +7,11 @@ export class MyTicketsPage extends BasePage {
   }
 
   get priorityFilter() {
-    return this.page.locator('select[name="robodesk_ticket_priority"]');
+    return this.page.locator('select[name="mmhd_ticket_priority"]');
   }
 
   get statusFilter() {
-    return this.page.locator('select[name="robodesk_ticket_status"]');
+    return this.page.locator('select[name="mmhd_ticket_status"]');
   }
 
   get orderBySelect() {
@@ -27,17 +27,17 @@ export class MyTicketsPage extends BasePage {
   }
 
   get ticketLinks() {
-    return this.page.locator('a[href*="robodesk_page=my-tickets&tid="]');
+    return this.page.locator('a[href*="mmhd_page=my-tickets&tid="]');
   }
 
   async openMyTickets() {
-    await this.page.goto("/robodesk-support/?robodesk_page=my-tickets");
+    await this.page.goto("/mmhd-support/?mmhd_page=my-tickets");
     await this.waitForLoading();
   }
 
   async openTicket(id: string) {
     await this.page.goto(
-      `/robodesk-support/?robodesk_page=my-tickets&tid=${id}`,
+      `/mmhd-support/?mmhd_page=my-tickets&tid=${id}`,
     );
     await this.waitForLoading();
   }

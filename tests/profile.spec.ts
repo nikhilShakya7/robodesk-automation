@@ -1,7 +1,7 @@
 import { portalTest, expect } from "../src/fixtures/roles";
 import { ProfilePage } from "../src/pages/profilePage";
 
-portalTest.describe("Robodesk profile", () => {
+portalTest.describe("Metamint Helpdesk profile", () => {
   portalTest(
     "portal: customer can update profile first name @regression @customer",
     async ({ page }) => {

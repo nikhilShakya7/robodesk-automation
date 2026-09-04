@@ -1,9 +1,9 @@
 import { portalTest, conversationTest, expect } from "../src/fixtures/roles";
 import { NotificationsPage } from "../src/pages/notificationsPage";
 import { CreateTicketPage } from "../src/pages/createTicketPage";
-import { replyToTicket } from "../src/helpers/robodeskHelpers";
+import { replyToTicket } from "../src/helpers/mmhdHelpers";
 
-portalTest.describe("Robodesk notifications", () => {
+portalTest.describe("Metamint Helpdesk notifications", () => {
   portalTest(
     "notifications: portal page renders notification area @regression @customer",
     async ({ page }) => {
@@ -27,7 +27,7 @@ portalTest.describe("Robodesk notifications", () => {
       await create.expectTicketCreated();
 
       await adminPage.goto(
-        "/wp-admin/admin.php?page=robodesk-dashboard&tab=dashboard",
+        "/wp-admin/admin.php?page=mmhd-dashboard&tab=dashboard",
       );
       await adminPage
         .getByRole("button", { name: /active conversations/i })
@@ -51,13 +51,13 @@ portalTest.describe("Robodesk notifications", () => {
         timeout: 15000,
       });
       await expect(
-        customerPage.locator("li.robodesk-notification-item.is-unread").first(),
+        customerPage.locator("li.mmhd-notification-item.is-unread").first(),
       ).toBeVisible({ timeout: 15000 });
 
       await notifications.clickMarkAllRead();
 
       await expect(
-        customerPage.locator("li.robodesk-notification-item.is-unread"),
+        customerPage.locator("li.mmhd-notification-item.is-unread"),
       ).toHaveCount(0, { timeout: 20000 });
     },
   );

@@ -19,7 +19,7 @@ export class CustomerPortalPage extends BasePage {
   }
 
   async openPortal() {
-    await this.page.goto("/robodesk-support/");
+    await this.page.goto("/mmhd-support/");
     await this.waitForLoading();
   }
 

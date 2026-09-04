@@ -1,8 +1,8 @@
-# Robodesk Playwright Test Status
+# Metamint Helpdesk Playwright Test Status
 
 ## Overview
 
-Current Playwright test coverage for the Robodesk project, organized feature-wise: one spec file per feature under `tests/`.
+Current Playwright test coverage for the Metamint Helpdesk project, organized feature-wise: one spec file per feature under `tests/`.
 
 ## Running
 
@@ -145,7 +145,7 @@ See [docs/tests.md](tests.md) for the full test documentation.
 - Portal tests rely on a valid cached session (`.state/customer-widget-storage.json`); if it expires server-side, delete it and re-run.
 - Admin tests log in once per worker and cache the session to `.state/admin-wp-storage.json` (delete to force a fresh login); the suite uses a 180s per-test timeout because dashboard pages can load slowly under load.
 - The conversation test uses the `conversationTest` fixture (customer + admin contexts in one test) and relies on the dashboard "Active Conversations" view; the tickets table truncates titles to 20 characters, so tests match on the truncated prefix.
-- The rate-limit transients (`robodesk_email_check_rate_*` in `wp_options`, 1-hour TTL) can be cleared manually during development via the Local MySQL socket; avoid running the auth suite more than twice per hour (4 email checks per run).
+- The rate-limit transients (`mmhd_email_check_rate_*` in `wp_options`, 1-hour TTL) can be cleared manually during development via the Local MySQL socket; avoid running the auth suite more than twice per hour (4 email checks per run).
 - The portal reply test (`portal: customer can reply to ticket from details page`) is **known-flaky**: it posts via the embedded WP comment form and is intermittently dropped by WordPress comment flood control. Leave as-is per maintainer decision.
 
 ## Planned Next Steps

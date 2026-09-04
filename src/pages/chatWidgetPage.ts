@@ -8,7 +8,7 @@ export class ChatWidgetPage extends BasePage {
 
   get chatTrigger() {
     return this.page
-      .locator("button.robodesk-toggle-btn")
+      .locator("button.mmhd-toggle-btn")
       .or(
         this.page.getByRole("button", { name: /pop over icon|chat|support/i }),
       )
@@ -21,7 +21,7 @@ export class ChatWidgetPage extends BasePage {
   }
 
   get chatPopup() {
-    return this.page.locator(".robodesk-popup.open");
+    return this.page.locator(".mmhd-popup.open");
   }
 
   get conversationsTab() {
@@ -45,7 +45,7 @@ export class ChatWidgetPage extends BasePage {
   }
 
   get continueButton() {
-    return this.page.locator("button.rd-login-button");
+    return this.page.locator("button.mmhd-login-button");
   }
 
   get passwordInput() {
@@ -53,7 +53,7 @@ export class ChatWidgetPage extends BasePage {
   }
 
   get loginButton() {
-    return this.page.locator("button.rd-login-button");
+    return this.page.locator("button.mmhd-login-button");
   }
 
   get emailError() {
@@ -65,9 +65,9 @@ export class ChatWidgetPage extends BasePage {
   }
 
   get registrationMessage() {
-    return this.page.locator(".robodesk-popup.open").getByText(
-      /registration is currently disabled/i,
-    );
+    return this.page
+      .locator(".mmhd-popup.open")
+      .getByText(/registration is currently disabled/i);
   }
 
   get conversationsView() {
@@ -87,7 +87,7 @@ export class ChatWidgetPage extends BasePage {
   }
 
   get ticketRows() {
-    return this.page.locator(".rd-tickets .single-rd-ticket");
+    return this.page.locator(".mmhd-tickets .single-mmhd-ticket");
   }
 
   get noTicketsMessage() {
@@ -95,39 +95,39 @@ export class ChatWidgetPage extends BasePage {
   }
 
   get faqItems() {
-    return this.page.locator(".robodesk-popup.open .rd-faq-item");
+    return this.page.locator(".mmhd-popup.open .mmhd-faq-item");
   }
 
   get faqSearchInput() {
     return this.page.locator(
-      ".robodesk-popup.open input[placeholder='Search your answer here']",
+      ".mmhd-popup.open input[placeholder='Search your answer here']",
     );
   }
 
   get noticeItems() {
-    return this.page.locator(".robodesk-popup.open .rd-notice-item");
+    return this.page.locator(".mmhd-popup.open .mmhd-notice-item");
   }
 
   get backButton() {
-    return this.page.locator(".robodesk-popup.open .back-button");
+    return this.page.locator(".mmhd-popup.open .back-button");
   }
 
   get singleTicketMessageInput() {
     return this.page.locator(
-      ".robodesk-popup.open textarea[placeholder='Write a message...']",
+      ".mmhd-popup.open textarea[placeholder='Write a message...']",
     );
   }
 
   get singleTicketSendButton() {
-    return this.page.locator(".robodesk-popup.open .chat-input button").last();
+    return this.page.locator(".mmhd-popup.open .chat-input button").last();
   }
 
   get fileInput() {
-    return this.page.locator(".robodesk-popup.open input[type='file']").first();
+    return this.page.locator(".mmhd-popup.open input[type='file']").first();
   }
 
   get sentImages() {
-    return this.page.locator(".robodesk-popup.open .chat-message.sent img");
+    return this.page.locator(".mmhd-popup.open .chat-message.sent img");
   }
 
   async openNoticesTab() {
@@ -174,7 +174,7 @@ export class ChatWidgetPage extends BasePage {
   }
 
   get chatView() {
-    return this.page.locator(".rd-single-ticket .chat-container");
+    return this.page.locator(".mmhd-single-ticket .chat-container");
   }
 
   get replyInput() {

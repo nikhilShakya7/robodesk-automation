@@ -7,15 +7,15 @@ export class NotificationsPage extends BasePage {
   }
 
   get markAllReadButton() {
-    return this.page.locator("#robodesk-mark-all-notifications-read");
+    return this.page.locator("#mmhd-mark-all-notifications-read");
   }
 
   get notificationItems() {
-    return this.page.locator("li.robodesk-notification-item");
+    return this.page.locator("li.mmhd-notification-item");
   }
 
   get unreadItems() {
-    return this.page.locator("li.robodesk-notification-item.is-unread");
+    return this.page.locator("li.mmhd-notification-item.is-unread");
   }
 
   get emptyMessage() {
@@ -24,7 +24,7 @@ export class NotificationsPage extends BasePage {
 
   async openNotifications() {
     await this.page.goto(
-      "/robodesk-support/?robodesk_page=notifications",
+      "/mmhd-support/?mmhd_page=notifications",
     );
     await this.waitForLoading();
   }

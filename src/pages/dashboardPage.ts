@@ -6,8 +6,8 @@ export class DashboardPage extends BasePage {
     super(page);
   }
 
-  get robodeskMenuLink() {
-    return this.page.getByRole("link", { name: /robodesk/i }).first();
+  get mmhdMenuLink() {
+    return this.page.getByRole("link", { name: /mmhd/i }).first();
   }
 
   get dashboardLink() {
@@ -32,17 +32,17 @@ export class DashboardPage extends BasePage {
 
   async openDashboard() {
     await this.page.goto(
-      "/wp-admin/admin.php?page=robodesk-dashboard&tab=dashboard",
+      "/wp-admin/admin.php?page=mmhd-dashboard&tab=dashboard",
     );
     await this.waitForLoading();
   }
 
   async expectCoreMenuVisible() {
-    await expect(this.robodeskMenuLink)
+    await expect(this.mmhdMenuLink)
       .toBeVisible()
       .catch(() => undefined);
     await expect(this.page.locator("body")).toContainText(
-      /dashboard|robodesk/i,
+      /dashboard|mmhd/i,
     );
   }
 }

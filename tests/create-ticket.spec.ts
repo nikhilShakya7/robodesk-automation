@@ -2,7 +2,7 @@ import { test, expect, portalTest } from "../src/fixtures/roles";
 import { CreateTicketPage } from "../src/pages/createTicketPage";
 import { createTicketData } from "../src/data/fakeData";
 
-test.describe("Robodesk create ticket", () => {
+test.describe("Metamint Helpdesk create ticket", () => {
   test.setTimeout(180_000);
   test("tickets: create ticket form is available @smoke @regression @customer", async ({
     page,
@@ -43,7 +43,7 @@ test.describe("Robodesk create ticket", () => {
         if (request.method() === "POST") posts++;
       });
       await create.submitButton.click();
-      await expect(page).toHaveURL(/robodesk_page=create-ticket/);
+      await expect(page).toHaveURL(/mmhd_page=create-ticket/);
       await expect(create.titleInput).toHaveValue("");
       await expect(page.locator("body")).not.toContainText(
         /ticket.*created|ticket.*submitted|success|thanks/i,

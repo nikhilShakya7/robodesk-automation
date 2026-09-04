@@ -11,7 +11,7 @@ export class CredentialsVaultPage extends BasePage {
   }
 
   get addCredentialForm() {
-    return this.page.locator("form#robodesk-add-credential");
+    return this.page.locator("form#mmhd-add-credential");
   }
 
   get nameInput() {
@@ -35,11 +35,11 @@ export class CredentialsVaultPage extends BasePage {
   }
 
   get submitButton() {
-    return this.page.locator('#robodesk-add-credential input[type="submit"]');
+    return this.page.locator('#mmhd-add-credential input[type="submit"]');
   }
 
   async openVault() {
-    await this.page.goto("/robodesk-support/?robodesk_page=credentials-vault");
+    await this.page.goto("/mmhd-support/?mmhd_page=credentials-vault");
     await this.waitForLoading();
   }
 

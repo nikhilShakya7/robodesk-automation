@@ -1,10 +1,10 @@
-# Robodesk Playwright Test Documentation
+# Metamint Helpdesk Playwright Test Documentation
 
 ## Overview
 
-End-to-end test suite for the Robodesk customer support plugin, built with Playwright Test.
+End-to-end test suite for the Metamint Helpdesk customer support plugin, built with Playwright Test.
 
-- Base URL: `http://robodesk1.local`
+- Base URL: `http://metamint.local`
 - Browser: Chromium (Desktop Chrome), headless
 - Framework: `@playwright/test`
 - Page Object Model under `src/pages/`
@@ -63,25 +63,25 @@ npx playwright test tickets.spec.ts --grep "reply to ticket"
 
 | Test                                                                          | Tags                         | What it verifies                                                                                     |
 | ----------------------------------------------------------------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------- |
-| notifications: portal page renders notification area                          | @regression @customer        | `?robodesk_page=notifications` renders the mark-all-read button and/or notification items            |
-| notifications: admin reply generates a notification and mark-all-read clears it | @regression @admin @customer | Admin replies create an unread `.robodesk-notification-item.is-unread`; mark-all-read removes unread |
+| notifications: portal page renders notification area                          | @regression @customer        | `?mmhd_page=notifications` renders the mark-all-read button and/or notification items            |
+| notifications: admin reply generates a notification and mark-all-read clears it | @regression @admin @customer | Admin replies create an unread `.mmhd-notification-item.is-unread`; mark-all-read removes unread |
 
 ## Admin Tests (`tests/admin.spec.ts`)
 
 | Test                                                        | Tags                      | What it verifies                                                                                                                                                                                        |
 | ----------------------------------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| auth: admin can view dashboard                              | @smoke @regression @admin | Opens the Robodesk dashboard with the cached admin session and asserts the core menu renders (login itself is covered once by the `adminTest` fixture when the session cache is missing or expired)     |
+| auth: admin can view dashboard                              | @smoke @regression @admin | Opens the Metamint Helpdesk dashboard with the cached admin session and asserts the core menu renders (login itself is covered once by the `adminTest` fixture when the session cache is missing or expired)     |
 | profile: profile page loads                                 | @regression @admin        | Profile page opens for the admin session                                                                                                                                                                |
 | helpers: create ticket and show toast                       | @regression @customer     | Ticket creation flow on `/submit-ticket/` and the success toast appears                                                                                                                                 |
-| helpers: reply to ticket and status change                  | @regression @admin        | Opens a ticket from the Robodesk dashboard (`admin.php?page=robodesk-dashboard&tab=dashboard&ticket=N`), posts a reply via `#new-reply` + `#send-reply-btn`, changes status via `#ticket-status-select` |
+| helpers: reply to ticket and status change                  | @regression @admin        | Opens a ticket from the Metamint Helpdesk dashboard (`admin.php?page=mmhd-dashboard&tab=dashboard&ticket=N`), posts a reply via `#new-reply` + `#send-reply-btn`, changes status via `#ticket-status-select` |
 | dashboard: bulk set status to Open from all tickets view    | @regression @admin        | On `tab=tickets&status=all`: checks a row `.ticket-checkbox`, applies `#bulk-action-select` "Set Status: Open" via `#apply-bulk-action`, body shows the updated notice                                  |
 | ticket: priority change persists on dashboard ticket view   | @regression @admin        | Changes `#ticket-priority-select` to a different value, reloads the ticket view, asserts it persisted, then restores the original                                                                       |
 | ticket: assignee change persists on dashboard ticket view   | @regression @admin        | Changes `#ticket-assignee-select` to a different agent (value = user ID), reloads, asserts persistence, restores                                                                                        |
 | departments: add and delete a category                      | @regression @admin        | `edit-tags.php?taxonomy=robdesk_ticket_category`: adds via `#tag-name` + `#submit`, expects "Item added." notice, deletes via `a.delete-tag` (accepts the JS confirm dialog), row removed              |
 | priorities: add and delete a category                       | @regression @admin        | Same flow on `taxonomy=robdesk_ticket_priority`                                                                                                                                                        |
-| faq: create, publish and trash a FAQ                        | @regression @admin        | Classic editor `post-new.php?post_type=robodesk_faq`: fills `#title`, clicks `#publish`, expects "Post published.", then moves the row to Trash via `a.submitdelete`                                    |
+| faq: create, publish and trash a FAQ                        | @regression @admin        | Classic editor `post-new.php?post_type=mmhd_faq`: fills `#title`, clicks `#publish`, expects "Post published.", then moves the row to Trash via `a.submitdelete`                                    |
 | notice: create, publish and trash a notice                  | @regression @admin        | Same flow on `post_type=notice`                                                                                                                                                                         |
-| debug log: page loads                                       | @regression @admin        | `admin.php?page=robodesk-debug-log` renders for the admin session                                                                                                                                       |
+| debug log: page loads                                       | @regression @admin        | `admin.php?page=mmhd-debug-log` renders for the admin session                                                                                                                                       |
 
 ## Filters Tests (`tests/filters.spec.ts`)
 
@@ -102,7 +102,7 @@ npx playwright test tickets.spec.ts --grep "reply to ticket"
 
 | Test                                                                      | Tags                         | What it verifies                                                                                                                              |
 | ------------------------------------------------------------------------- | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| portal: guest sees login prompt                                           | @smoke @regression @customer | `/robodesk-support/` shows the "Please login" prompt for guests                                                                               |
+| portal: guest sees login prompt                                           | @smoke @regression @customer | `/mmhd-support/` shows the "Please login" prompt for guests                                                                               |
 | auth: customer logs in via chat widget and creates a ticket               | @smoke @regression @customer | Widget login with existing user email + password, then ticket creation                                                                        |
 | auth: widget login blocked for invalid email format                       | @regression @customer        | Non-email input keeps the login form open (no session)                                                                                        |
 | auth: widget login blocked for empty email                                | @regression @customer        | Empty submit keeps the login form open                                                                                                        |
@@ -142,8 +142,8 @@ npx playwright test tickets.spec.ts --grep "reply to ticket"
 
 | Test                                                               | Tags                         | What it verifies                                                                                                                                                                                                                                                    |
 | ------------------------------------------------------------------ | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| portal: my tickets page lists tickets and filters work             | @smoke @regression @customer | `?robodesk_page=my-tickets` renders filters (priority, status, order) and the ticket table; status filter applies                                                                                                                                                   |
-| portal: customer can open ticket details from my tickets           | @regression @customer        | Clicking a ticket link opens the frontend detail view (`/robodesk-support/?robodesk_page=my-tickets&tid=N`)                                                                                                                                                         |
+| portal: my tickets page lists tickets and filters work             | @smoke @regression @customer | `?mmhd_page=my-tickets` renders filters (priority, status, order) and the ticket table; status filter applies                                                                                                                                                   |
+| portal: customer can open ticket details from my tickets           | @regression @customer        | Clicking a ticket link opens the frontend detail view (`/mmhd-support/?mmhd_page=my-tickets&tid=N`)                                                                                                                                                         |
 | portal: customer can reply to ticket from details page             | @regression @customer        | Types into the reply editor (`iframe#comment_ifr`), submits via "Add Reply", and asserts the reply renders (known-flaky: intermittently dropped by WP comment flood control) |
 | portal: ticket details show conversation id, status and priority metadata | @regression @customer        | Conversation ID, status, and priority read-only metadata cards render on the ticket detail view                                                                                                                                     |
 | portal: customer cannot view another user's ticket via direct link | @regression @customer        | Self-contained: the admin creates a ticket (via `conversationTest` fixture), its id is read from the dashboard "Active Conversations" view, and the customer opening `tid=` that ticket sees "You do not have permission to view this ticket." with no comment form |
@@ -154,7 +154,7 @@ npx playwright test tickets.spec.ts --grep "reply to ticket"
 | Test                                                               | Tags                         | What it verifies                                                                                                               |
 | ------------------------------------------------------------------ | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | tickets: create ticket form is available                           | @smoke @regression @customer | SKIPPED - live UI does not render the form on `/submit-ticket/` (documented TODO)                                              |
-| portal: create ticket form renders and submits a ticket            | @regression @customer        | `?robodesk_page=create-ticket` shows title, TinyMCE description editor, and priority select; submits a new ticket successfully |
+| portal: create ticket form renders and submits a ticket            | @regression @customer        | `?mmhd_page=create-ticket` shows title, TinyMCE description editor, and priority select; submits a new ticket successfully |
 | portal: create ticket blocks empty title without creating a ticket | @regression @customer        | Empty title submit is blocked by native validation: no POST, no success message, form stays open                               |
 | portal: create ticket accepts special characters in the title      | @regression @customer        | Titles containing quotes and special characters are accepted                                                                    |
 
@@ -162,7 +162,7 @@ npx playwright test tickets.spec.ts --grep "reply to ticket"
 
 | Test                                                    | Tags                         | What it verifies                                                                                                                         |
 | ------------------------------------------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| portal: credentials vault shows and stores a credential | @smoke @regression @customer | `?robodesk_page=credentials-vault` lists credentials; adding a credential persists it to the table; deletion (confirm dialog) removes it |
+| portal: credentials vault shows and stores a credential | @smoke @regression @customer | `?mmhd_page=credentials-vault` lists credentials; adding a credential persists it to the table; deletion (confirm dialog) removes it |
 | vault: cancelling delete keeps the credential           | @regression @customer        | Dismissing the delete `confirm()` dialog keeps the credential in the table                                                               |
 | vault: empty required fields block submission           | @regression @customer        | Submitting an empty form (name, username, password required) is blocked; no credential is added                                           |
 | vault: missing password field blocks submission         | @regression @customer        | Submitting with name+username but no password is blocked; no credential is added                                                         |
@@ -171,7 +171,7 @@ npx playwright test tickets.spec.ts --grep "reply to ticket"
 
 | Test                                           | Tags                  | What it verifies                                                                                                                                                          |
 | ---------------------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| portal: customer can update profile first name | @regression @customer | `?robodesk_page=profile` renders the form; updating the first name shows "Profile updated successfully!" and persists across reload; original value is restored afterward |
+| portal: customer can update profile first name | @regression @customer | `?mmhd_page=profile` renders the form; updating the first name shows "Profile updated successfully!" and persists across reload; original value is restored afterward |
 | profile: password mismatch is flagged and submit is blocked | @regression @customer | Mismatched password/confirm (typed via `pressSequentially` to fire `keyup`) shows feedback and blocks submission |
 | profile: weak password lists missing requirements | @regression @customer | A weak new password lists the missing requirements via feedback |
 
@@ -179,7 +179,7 @@ npx playwright test tickets.spec.ts --grep "reply to ticket"
 
 | Test                                                                               | Tags                         | What it verifies                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | ---------------------------------------------------------------------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| conversation: customer (widget) and admin (backend) exchange replies on one ticket | @regression @admin @customer | Full round-trip in **two separate browser contexts** (`conversationTest` fixture: `customerPage` with the cached widget session + `adminPage` with the cached admin session): customer creates a ticket from the portal (`?robodesk_page=create-ticket`); admin finds it via the dashboard "Active Conversations" view, opens it, and replies from the wp-admin ticket view (`#new-reply` + `#send-reply-btn`); customer opens the same ticket in the chat widget (search + single-ticket view), sees the admin reply, and replies back; admin reloads the ticket view and sees the customer's reply |
+| conversation: customer (widget) and admin (backend) exchange replies on one ticket | @regression @admin @customer | Full round-trip in **two separate browser contexts** (`conversationTest` fixture: `customerPage` with the cached widget session + `adminPage` with the cached admin session): customer creates a ticket from the portal (`?mmhd_page=create-ticket`); admin finds it via the dashboard "Active Conversations" view, opens it, and replies from the wp-admin ticket view (`#new-reply` + `#send-reply-btn`); customer opens the same ticket in the chat widget (search + single-ticket view), sees the admin reply, and replies back; admin reloads the ticket view and sees the customer's reply |
 
 ## Test Tags
 
@@ -199,7 +199,7 @@ src/
 │   ├── basePage.ts           # goto, waitForLoading, waitForToast
 │   ├── loginPage.ts          # wp-login flow
 │   ├── dashboardPage.ts      # admin dashboard
-│   ├── customerPortalPage.ts # /robodesk-support/ guest view
+│   ├── customerPortalPage.ts # /mmhd-support/ guest view
 │   ├── myTicketsPage.ts      # my-tickets list + filters
 │   ├── createTicketPage.ts   # create-ticket form (TinyMCE-aware)
 │   ├── credentialsVaultPage.ts # credentials vault CRUD
@@ -208,7 +208,7 @@ src/
 │   ├── profilePage.ts        # wp-admin + portal profile forms
 │   └── notificationsPage.ts
 ├── helpers/
-│   └── robodeskHelpers.ts    # login, createTicket, reply, changeStatus, toast
+│   └── mmhdHelpers.ts    # login, createTicket, reply, changeStatus, toast
 ├── fixtures/
 │   └── roles.ts              # test + portalTest/widgetTest/adminTest/conversationTest (storageState reuse)
 └── data/
@@ -217,14 +217,14 @@ src/
 
 ## Notes & Known Constraints
 
-- **Server-side rate limiting**: the widget email-check endpoint allows **10 checks per IP per hour** and blocks further checks with "Too many attempts. Please try again later." All local requests share one IP, so the whole suite shares the budget. The portal tests mitigate this by logging in once per worker and caching the session to `.state/customer-widget-storage.json`. If a cached session expires, delete that file and wait for the hourly limit to reset. The password login (`/wp-json/robodesk/v1/login`) is not rate limited.
+- **Server-side rate limiting**: the widget email-check endpoint allows **10 checks per IP per hour** and blocks further checks with "Too many attempts. Please try again later." All local requests share one IP, so the whole suite shares the budget. The portal tests mitigate this by logging in once per worker and caching the session to `.state/customer-widget-storage.json`. If a cached session expires, delete that file and wait for the hourly limit to reset. The password login (`/wp-json/mmhd/v1/login`) is not rate limited.
 - **Admin one-time login**: admin feature tests use the `adminTest` fixture, which logs in once per worker via `/wp-login.php` and caches the session to `.state/admin-wp-storage.json` (validated on reuse, refreshed when expired). No spec-level test performs the full wp-login flow anymore; the login path is exercised by the fixture itself whenever the cache is missing or expired.
 - **Dashboard default filter**: the admin dashboard loads with the "My Conversations" view (`filter=my_conversation`, agent=admin). The conversation test clicks "Active Conversations" to list all open tickets; the tickets table also truncates titles to 20 characters, so row lookups filter by `title.slice(0, 20)`.
 - **Admin suite timeout**: the admin spec sets `test.setTimeout(180000)` because the local server can be slow under load; dashboard pages can take over a minute to fully render.
 - **TinyMCE editor**: the create-ticket description field is a hidden `textarea#ticket_content`; tests type into `iframe#ticket_content_ifr`. The customer reply editor on ticket details is `iframe#comment_ifr`.
-- **Admin reply/status**: performed from the Robodesk dashboard ticket view (not the wp-admin post editor), using `#new-reply`, `#send-reply-btn`, and `#ticket-status-select`.
+- **Admin reply/status**: performed from the Metamint Helpdesk dashboard ticket view (not the wp-admin post editor), using `#new-reply`, `#send-reply-btn`, and `#ticket-status-select`.
 - **Vault delete**: deletion triggers a native `confirm()` dialog which the page object accepts.
-- **Skipped test**: the `/submit-ticket/` form scenario stays skipped until the live UI renders the expected form. Note that `/submit-ticket/` does not render the ticket form on this site for any role — the supported path is the portal `?robodesk_page=create-ticket` page.
+- **Skipped test**: the `/submit-ticket/` form scenario stays skipped until the live UI renders the expected form. Note that `/submit-ticket/` does not render the ticket form on this site for any role — the supported path is the portal `?mmhd_page=create-ticket` page.
 - **Known-flaky portal reply test**: `portal: customer can reply to ticket from details page` uses the embedded WordPress comment form (`#comment_ifr` + `#submit`). Running many such replies in quick succession can trigger WordPress comment flood control, intermittently dropping the reply. Treat it as known-flaky; the rest of the tickets suite is stable.
 - **Admin status/priority filters do not filter rows (product bug)**: on the admin tickets tab, changing the Status/Priority dropdowns updates the select value but the returned `tr.table-row` rows are NOT actually filtered by that term (e.g. Priority=High still returns `medium` rows; Status=Closed still returns `open` rows), even after clicking Filter. The filter tests therefore assert the select's `toHaveValue` plus row-count bounds rather than exact row terms.
-- **Rate-limit resets**: the limiter stores per-IP counters in `wp_options` transients (`robodesk_email_check_rate_*`, 1-hour TTL). During development the counters can be cleared directly from the Local site's MySQL socket: `delete from wp_options where option_name like '%robodesk_email_check_rate_%'`. Avoid re-running the auth suite more than twice per hour (4 email checks per run).
+- **Rate-limit resets**: the limiter stores per-IP counters in `wp_options` transients (`mmhd_email_check_rate_*`, 1-hour TTL). During development the counters can be cleared directly from the Local site's MySQL socket: `delete from wp_options where option_name like '%mmhd_email_check_rate_%'`. Avoid re-running the auth suite more than twice per hour (4 email checks per run).

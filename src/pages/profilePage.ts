@@ -52,7 +52,7 @@ export class ProfilePage extends BasePage {
   }
 
   async openPortalProfile() {
-    await this.page.goto("/robodesk-support/?robodesk_page=profile");
+    await this.page.goto("/mmhd-support/?mmhd_page=profile");
     await this.waitForLoading();
   }
 

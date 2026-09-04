@@ -2,7 +2,7 @@ import { expect } from "../src/fixtures/roles";
 import { portalTest } from "../src/fixtures/roles";
 import { CredentialsVaultPage } from "../src/pages/credentialsVaultPage";
 
-portalTest.describe("Robodesk credentials vault", () => {
+portalTest.describe("Metamint Helpdesk credentials vault", () => {
   portalTest(
     "portal: credentials vault shows and stores a credential @smoke @regression @customer",
     async ({ page }) => {
@@ -52,13 +52,13 @@ portalTest.describe("Robodesk credentials vault", () => {
       const vault = new CredentialsVaultPage(page);
       await vault.openVault();
       await vault.expectVaultVisible();
-      const before = await page.locator("tr.robodesk-table-content").count();
+      const before = await page.locator("tr.mmhd-table-content").count();
 
       await vault.submitWithMissingFields({});
       await page.waitForTimeout(500);
 
       await expect(vault.addCredentialForm).toBeVisible();
-      const after = await page.locator("tr.robodesk-table-content").count();
+      const after = await page.locator("tr.mmhd-table-content").count();
       expect(after).toBe(before);
     },
   );
@@ -69,7 +69,7 @@ portalTest.describe("Robodesk credentials vault", () => {
       const vault = new CredentialsVaultPage(page);
       await vault.openVault();
       await vault.expectVaultVisible();
-      const before = await page.locator("tr.robodesk-table-content").count();
+      const before = await page.locator("tr.mmhd-table-content").count();
 
       await vault.submitWithMissingFields({
         name: `QA nopass ${Date.now()}`,
@@ -78,7 +78,7 @@ portalTest.describe("Robodesk credentials vault", () => {
       await page.waitForTimeout(500);
 
       await expect(vault.addCredentialForm).toBeVisible();
-      const after = await page.locator("tr.robodesk-table-content").count();
+      const after = await page.locator("tr.mmhd-table-content").count();
       expect(after).toBe(before);
     },
   );

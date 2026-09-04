@@ -7,7 +7,7 @@ import {
 } from "@playwright/test";
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "fs";
 import { join, dirname } from "path";
-import { login, loginCustomerViaWidgetWithPassword } from "../helpers/robodeskHelpers";
+import { login, loginCustomerViaWidgetWithPassword } from "../helpers/mmhdHelpers";
 import { config } from "../config/env";
 
 type StorageState = Awaited<ReturnType<BrowserContext["storageState"]>>;
@@ -76,7 +76,7 @@ async function validateCustomerStorage(
   const context = await browser.newContext({ storageState: state });
   const page = await context.newPage();
   try {
-    await page.goto("/robodesk-support/?robodesk_page=my-tickets");
+    await page.goto("/mmhd-support/?mmhd_page=my-tickets");
     await page.waitForTimeout(2000);
     const loggedIn = await page.evaluate(
       () => !document.body.innerText.includes("Please login to view your tickets"),
@@ -142,7 +142,7 @@ async function validateAdminStorage(
   const page = await context.newPage();
   try {
     await page.goto(
-      "/wp-admin/admin.php?page=robodesk-dashboard&tab=dashboard",
+      "/wp-admin/admin.php?page=mmhd-dashboard&tab=dashboard",
     );
     await page.waitForTimeout(2000);
     const loggedIn = await page.evaluate(

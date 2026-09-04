@@ -31,13 +31,13 @@ export class CreateTicketPage extends BasePage {
 
   get submitButton() {
     return this.page
-      .locator("form#robodesk-create-ticket")
+      .locator("form#mmhd-create-ticket")
       .getByRole("button", { name: /create ticket/i });
   }
 
   // Navigation
   async openCreateTicket() {
-    await this.page.goto("/robodesk-support/?robodesk_page=create-ticket");
+    await this.page.goto("/mmhd-support/?mmhd_page=create-ticket");
     await this.waitForLoading();
   }
 

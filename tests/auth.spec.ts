@@ -3,9 +3,9 @@ import { CustomerPortalPage } from "../src/pages/customerPortalPage";
 import { ChatWidgetPage } from "../src/pages/chatWidgetPage";
 import { createTicketData } from "../src/data/fakeData";
 import { config } from "../src/config/env";
-import { createTicket, waitForToast } from "../src/helpers/robodeskHelpers";
+import { createTicket, waitForToast } from "../src/helpers/mmhdHelpers";
 
-test.describe("Robodesk auth", () => {
+test.describe("Metamint Helpdesk auth", () => {
   test("portal: guest sees login prompt @smoke @regression @customer", async ({
     page,
   }) => {
@@ -61,7 +61,7 @@ test.describe("Robodesk auth", () => {
     page.on("request", (request) => {
       if (
         request.method() === "POST" &&
-        /admin-ajax\.php|robodesk\/v1\/login/.test(request.url())
+        /admin-ajax\.php|mmhd\/v1\/login/.test(request.url())
       ) {
         authPosts++;
       }
